@@ -5,10 +5,10 @@ OpenDroneControl [ODC] is an open source software platform for developing intera
 
 Build
 
-  ./sbt package
+./sbt package
 
 
 Run example Apps
 
-  ./sbt "project droneSimulator" run
-  ./sbt "project droneOSC" run
+./sbt "project droneSimulator" run
+./sbt "project droneOSC" run

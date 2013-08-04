@@ -39,8 +39,7 @@ class ARDrone(var ip:String="192.168.1.1") extends DroneBase with NavDataListene
   var emergency = false
   var nd:NavData = _
 
-  println("DroneControl version 0.?")
-  
+
   /* DroneBase methods */
 
   def connect(){

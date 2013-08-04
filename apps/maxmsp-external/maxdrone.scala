@@ -33,7 +33,7 @@ class DroneControl extends MaxObject {
   private var mat: JitterMatrix = _
 
 
-  println("DroneControl version 0.4.3")
+  println("OpenDroneControl version 0.4.3")
   
 
   //////////////////////////////////////////////////////////////////////

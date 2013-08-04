@@ -15,8 +15,6 @@ object Main extends App {
 
   var drone = new ARDrone
 
-  // val live = new Ruby("droneosc.rb")
-
   DroneOSC.dump = true
   DroneOSC.listen()
 
@@ -34,6 +32,15 @@ object DroneOSC{
 
 	def listen(port:Int=8000){
 		import Main.drone
+
+		println( s"Listening for drone commands on port $port" )
+		println( "	Example Commands: ")
+		println( "		/connect 192.168.1.1")
+		println( "		/takeOff")
+		println( "		/move 0.1 0.0 0.0 0.0")
+		println( "		/led 4 5.0 5")
+		println( "		/land")
+		println( "		/disconnect")
 
 		val cfg         = UDP.Config()
 	  cfg.localPort   = port  // 0x53 0x4F or 'SO'

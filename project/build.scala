@@ -18,12 +18,12 @@ object Settings {
       "maven.org" at "http://repo1.maven.org/maven2"
     ),
     autoCompilerPlugins := true,
-    scalacOptions += "-Xexperimental",
-    downloadLibsTask
+    scalacOptions += "-Xexperimental"
     //libraryDependencies ++= Seq()
   )
 
   lazy val odc = Settings.common ++ Seq (
+    downloadLibsTask
     //libraryDependencies ++= Seq()
   )
 
@@ -121,7 +121,7 @@ object Settings {
     val seerDest = file("apps/droneSimulator/lib")
     val maxDest = file("apps/maxmsp-external/lib")
     val odcDest = file("odc/lib")
-    val seerFilter =  new ExactFilter("GlulogicMT.jar") | new ExactFilter("libGlulogicMT.dylib") | new ExactFilter("seer.jar") | 
+    val seerFilter =  new ExactFilter("GlulogicMT.jar") | new ExactFilter("libGlulogicMT.jnilib") | new ExactFilter("seer.jar") | 
                       new ExactFilter("seer-desktop.jar") | new ExactFilter("monido-core_2.10-0.1.2.jar") | new ExactFilter("gdx.jar") |
                       new ExactFilter("gdx-natives.jar") | new ExactFilter("gdx-backend-lwjgl.jar") | new ExactFilter("gdx-backend-lwjgl-natives.jar")
     val maxFilter = new ExactFilter("max.jar") | new ExactFilter("jitter.jar")

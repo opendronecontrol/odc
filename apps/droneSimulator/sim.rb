@@ -91,7 +91,7 @@ delay2 = 0
 Trackpad.clear()
 Trackpad.connect()
 Trackpad.bind( lambda{|i,f|      # i -> number of fingers detected
-							     # f -> array of (x,y,dx,dy
+							     # f -> array of (x,y,dx,dy)
 	xx = f[0]*2 - 1
 	yy = f[1]*2 - 1	
 

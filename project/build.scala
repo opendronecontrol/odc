@@ -2,12 +2,13 @@ import sbt._
 
 import Keys._
 
-// import ProguardPlugin._
+import com.typesafe.sbt.SbtProguard._
+import sbtunidoc.Plugin._
 
 object Settings {
   
   lazy val common = Defaults.defaultSettings ++ Seq (
-    version := "0.4.3",
+    version := "0.1",
     scalaVersion := "2.10.2",
     resolvers ++= Seq(
       "typesafe" at "http://repo.typesafe.com/typesafe/releases/",
@@ -23,21 +24,22 @@ object Settings {
   )
 
   lazy val odc = Settings.common ++ Seq (
-    downloadLibsTask
-    //libraryDependencies ++= Seq()
+    downloadLibsTask,
+    libraryDependencies ++= Seq(
+      "de.sciss" %% "scalaosc" % "1.1.+"
+    )
   )
 
   lazy val javadrone = Settings.common ++ Seq(
     libraryDependencies ++= Seq(
       "xuggle" % "xuggle-xuggler" % "5.4"
+      // "org.slf4j" % "slf4j-api" % "1.7.2"
+      //"org.slf4j" % "slf4j-jdk14" % "1.7.2"
     )
   )
 
   lazy val maxmsp = Settings.common ++ Seq (
-    fork in Compile := true,
-    libraryDependencies ++= Seq(
-      "log4j" % "log4j" % "1.2.16"
-    )
+    fork in Compile := true
   )
 
   lazy val osc = Settings.common ++ Seq(
@@ -57,48 +59,97 @@ object Settings {
     )
   )
 
-  // lazy val proguard = proguardSettings ++ Seq(
-  //   proguardOptions := Seq( 
-  //     //"-libraryjars lib/max.jar:lib/jitter.jar",
-  //     "-keep class DroneControl { *; }",
-  //     "-keep class com.fishuyo.drone.DroneControl { *; }",
-  //     "-keep class com.fishuyo.maths.Vec3",
-  //     "-keep class com.fishuyo.maths.Quat",
-  //     """-keepclasseswithmembers public class * {
-  //       public static void main(java.lang.String[]);
-  //     }
+  // Proguard options for minimizing classes into a single jar
+  import ProguardKeys.{ mergeStrategies, merge, options }
+  import ProguardOptions.keepMain
 
-  //     -keep class * implements org.xml.sax.EntityResolver
-  //     -keepclassmembers class * {
-  //       ** MODULE$;
-  //     }
+  lazy val proguard = proguardSettings ++ Seq(
+    options in Proguard += "-dontoptimize",
+    merge in Proguard := true,
+    mergeStrategies in Proguard += ProguardMerge.discard("META-INF/.*".r),
+    options in Proguard += """ 
+      -keep class DroneControl { *; }
+      -keep class org.opendronecontrol.spatial.Vec3
+      -keep class org.opendronecontrol.spatial.Quat
+      -keep class org.opendronecontrol.spatial.Pose
+      -keep class org.opendronecontrol.platforms.ardrone.ARDrone
+      -keep class org.opendronecontrol.tracking.PositionTrackingController
+      -keep class com.cycling74.max.MaxObject
 
-  //     -keepclassmembernames class scala.concurrent.forkjoin.ForkJoinPool {
-  //       long eventCount;
-  //       int  workerCounts;
-  //       int  runControl;
-  //       scala.concurrent.forkjoin.ForkJoinPool$WaitQueueNode syncStack;
-  //       scala.concurrent.forkjoin.ForkJoinPool$WaitQueueNode spareStack;
-  //     }
 
-  //     -keepclassmembernames class scala.concurrent.forkjoin.ForkJoinWorkerThread {
-  //       int base;
-  //       int sp;
-  //       int runState;
-  //     }
 
-  //     -keepclassmembernames class scala.concurrent.forkjoin.ForkJoinTask {
-  //       int status;
-  //     }
 
-  //     -keepclassmembernames class scala.concurrent.forkjoin.LinkedTransferQueue {
-  //       scala.concurrent.forkjoin.LinkedTransferQueue$PaddedAtomicReference head;
-  //       scala.concurrent.forkjoin.LinkedTransferQueue$PaddedAtomicReference tail;
-  //       scala.concurrent.forkjoin.LinkedTransferQueue$PaddedAtomicReference cleanMe;
-  //     }"""
-  //   )
-  // )
+      #
+      # scala
+      #
 
+      -keepclassmembers class * { ** MODULE$; }
+
+      -keepclassmembernames class scala.concurrent.forkjoin.ForkJoinPool {
+        long ctl;
+      }
+
+      -keepclassmembernames class scala.concurrent.forkjoin.ForkJoinPool$WorkQueue {
+        int runState;
+      }
+
+      -keepclassmembernames class scala.concurrent.forkjoin.LinkedTransferQueue {
+        scala.concurrent.forkjoin.LinkedTransferQueue$Node head;
+        scala.concurrent.forkjoin.LinkedTransferQueue$Node tail;
+        int sweepVotes;
+      }
+
+      -keepclassmembernames class scala.concurrent.forkjoin.LinkedTransferQueue$Node {
+        java.lang.Object item;
+        scala.concurrent.forkjoin.LinkedTransferQueue$Node next;
+        java.lang.Thread waiter;
+      }
+
+      -dontnote scala.xml.**
+      -dontnote scala.concurrent.forkjoin.ForkJoinPool
+      -dontwarn scala.**
+
+      ###
+      -dontwarn ch.qos.**
+      -dontwarn com.cycling74.max.MXJDecompiler
+
+      """
+  )
+  // val proguardScala =
+
+  val oldscala = """
+  -keepclasseswithmembers public class * {
+        public static void main(java.lang.String[]);
+      }
+
+      -keep class * implements org.xml.sax.EntityResolver
+
+      -keepclassmembernames class scala.concurrent.forkjoin.ForkJoinPool {
+        long eventCount;
+        int  workerCounts;
+        int  runControl;
+        scala.concurrent.forkjoin.ForkJoinPool$WaitQueueNode syncStack;
+        scala.concurrent.forkjoin.ForkJoinPool$WaitQueueNode spareStack;
+      }
+
+      -keepclassmembernames class scala.concurrent.forkjoin.ForkJoinWorkerThread {
+        int base;
+        int sp;
+        int runState;
+      }
+
+      -keepclassmembernames class scala.concurrent.forkjoin.ForkJoinTask {
+        int status;
+      }
+
+      -keepclassmembernames class scala.concurrent.forkjoin.LinkedTransferQueue {
+        scala.concurrent.forkjoin.LinkedTransferQueue$PaddedAtomicReference head;
+        scala.concurrent.forkjoin.LinkedTransferQueue$PaddedAtomicReference tail;
+        scala.concurrent.forkjoin.LinkedTransferQueue$PaddedAtomicReference cleanMe;
+      }
+  """
+
+  // download unmanaged dependencies
   val downloadLibs = TaskKey[Unit]("download-libs", "Downloads/Updates required libs")
   val downloadLibsTask = downloadLibs <<= streams map { (s: TaskStreams) => doDownloadLibs(s) }
 
@@ -137,12 +188,14 @@ object Settings {
 }
 
 
+// Project definitions
 
 object odcBuild extends Build {
 
   lazy val aaall = Project(
     "all",
-    file(".")
+    file("."),
+    settings = Settings.common ++ unidocSettings
   ) aggregate( odc, backend_ardrone, maxmsp_external, apps )
 
   // common odc code
@@ -164,7 +217,7 @@ object odcBuild extends Build {
   lazy val maxmsp_external = Project (
     "maxmsp-external",
     file("apps/maxmsp-external"),
-    settings = Settings.maxmsp //++ Settings.proguard
+    settings = Settings.maxmsp ++ Settings.odc ++ Settings.proguard
   ) dependsOn(backend_ardrone)
 
 
@@ -177,13 +230,13 @@ object odcBuild extends Build {
   lazy val droneOSC = Project (
     "droneOSC",
     file("apps/droneOSC"),
-    settings = Settings.osc //++ Settings.proguard
+    settings = Settings.odc //++ Settings.proguard
   ) dependsOn(backend_ardrone)
 
   lazy val droneSimulator = Project (
     "droneSimulator",
     file("apps/droneSimulator"),
-    settings = Settings.osc ++ Settings.seer //++ Settings.proguard
+    settings = Settings.seer //++ Settings.proguard
   ) dependsOn(backend_ardrone)
 
 

@@ -7,13 +7,19 @@ import drone._
 
 import scala.collection.mutable.Queue
 
+/** PositionController Module
+  *   this is a mixin trait for DroneBase that adds absolute positioning based on some position sensors or tracking system
+  */
+trait PositionController extends DroneBase {
+  val tracker = new PositionTrackingController(this)
+  def moveTo(p:Pose){ tracker.moveTo(p) }
+  def step(p:Pose){ tracker.step(p) }
+}
 
-/*
-* PositionTrackingController
-*   This class is used to handle tracking system state and calculate control parameters pased on a destination position and yaw
-*		using a simple proportional derivative controller
-*
-*/
+/** PositionController
+  *   Used to handle tracking system state and calculate control parameters pased on a destination position and yaw
+  *		using a simple proportional derivative controller
+  */
 class PositionTrackingController( val drone:DroneBase ) {
 
 	// PID controllers
@@ -107,7 +113,7 @@ class PositionTrackingController( val drone:DroneBase ) {
   // trigger the drone to move to the next waypoint in the queue,
   // done automatically when close to previous waypoint destination
   def nextWaypoint(){
-    if( waypoints.isEmpty || drone == null) return
+    if( waypoints.isEmpty ) return
     // drone.playLED(4,10,1)
     val (x,y,z,w) = waypoints.dequeue
     moveTo(x,y,z,w)
@@ -199,7 +205,7 @@ class PositionTrackingController( val drone:DroneBase ) {
       
     }else nextWaypoint
 
-    if(hover) drone.hover()
+    if(hover) drone.hover
     else if(rotFirst && rot != 0.f) drone.move(0,0,0,rot)
     else drone.move(control.x,control.y,control.z,rot)      
   }

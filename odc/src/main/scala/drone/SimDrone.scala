@@ -21,7 +21,7 @@ class SimDrone extends DroneBase {
 	var flying = false
 	var takingOff = false
 
-  var control = Vec3()
+  var controls = Vec3()
   var rot = 0.f
 
   var maxEuler = .3f  
@@ -41,7 +41,7 @@ class SimDrone extends DroneBase {
 
 	def move(x:Float,y:Float,z:Float,r:Float){
 		if(!flying) return
-		control.set(x,y,z)
+		controls.set(x,y,z)
 		rot = r
 		sPose.quat.fromEuler(z*maxEuler,0.f,-x*maxEuler)
 		thrust = (-g.y + y)/sPose.uu().y

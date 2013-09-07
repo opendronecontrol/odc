@@ -3,6 +3,10 @@
 package org.opendronecontrol
 package drone
 
+/** Abstract interface to a drone platform implementation.
+  * 
+  * Implemented in [[org.opendronecontrol.platforms.ardrone.ARDrone]] and [[org.opendronecontrol.drone.SimDrone]]
+  */
 abstract class DroneBase {
 
   def connect()
@@ -11,7 +15,15 @@ abstract class DroneBase {
 
   def takeOff()
   def land()
+
+  /** move the drone relative to its local right handed coordinate frame where +x is to its right and -z is forward
+    * @param x pecentage of maximum acceleration in x direction 
+    * @param y pecentage of maximum acceleration in y direction 
+    * @param z pecentage of maximum acceleration in z direction 
+    * @param r pecentage of maximum rotation negative r causes counter clockwise rotation  
+    */
   def move(x:Float,y:Float,z:Float,r:Float)
+
   def hover(){}
 
   def forward(v:Float) = move(0,0,-v,0)
@@ -23,9 +35,39 @@ abstract class DroneBase {
   def cw(v:Float) = move(0,0,0,v)
   def ccw(v:Float) = move(0,0,0,-v)
   
+  /** command function is to handle drone specific commands
+    *   @param com command name to be executed
+    *   @param args list of arguments for the command
+    */
+  def command(com:String, args:Any* ){}
 
-  def command(com:String){}
-  def config(key:String, value:String){}
+  /** config function is to handle drone specific configuration parameters
+    *   @param key configuration key
+    *   @param value value to be assigned
+    */
+  def config(key:String, value:Any){}
+
+  /** video stream should be implemented by extending [[org.opendronecontrol.drone.VideoStream]]
+    *
+    * {{{
+    * class MyVideoStream extends VideoStream {...}
+    * drone.video = Some(new MyVideoStream)
+    * }}}
+    */
+  def hasVideo() = video.isDefined
+  var video:Option[VideoStream] = None
+
+  /** sensor data should be implemented by extending [[org.opendronecontrol.drone.SensorData]]
+    *
+    * {{{
+    * class MySensorData extends SensorData {...}
+    * drone.sensorData = Some(new MySensorData)
+    * }}}
+    */
+  def hasSensorData() = sensorData.isDefined
+  var sensorData:Option[SensorData] = None
 
 }
+
+
 

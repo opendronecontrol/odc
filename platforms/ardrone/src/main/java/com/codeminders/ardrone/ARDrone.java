@@ -1,4 +1,10 @@
 
+/** Modified 2012 by Tim Wood
+*    Minor changes to work with ARDrone 2.0
+*/
+
+
+
 package com.codeminders.ardrone;
 
 import java.io.ByteArrayOutputStream;
@@ -12,6 +18,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import java.awt.image.BufferedImage;
+
 
 import com.codeminders.ardrone.commands.ConfigureCommand;
 import com.codeminders.ardrone.commands.ControlCommand;
@@ -29,7 +38,7 @@ import com.codeminders.ardrone.data.ARDroneDataReader;
 import com.codeminders.ardrone.data.ChannelProcessor;
 import com.codeminders.ardrone.data.decoder.ardrone10.ARDrone10NavDataDecoder;
 import com.codeminders.ardrone.data.decoder.ardrone10.ARDrone10VideoDataDecoder;
-//import com.codeminders.ardrone.data.decoder.ardrone20.ARDrone20VideoDataDecoder;
+import com.codeminders.ardrone.data.decoder.ardrone20.ARDrone20VideoDataDecoder;
 import com.codeminders.ardrone.decoder.TestH264DataDecoder;
 import com.codeminders.ardrone.data.logger.ARDroneDataReaderAndLogWrapper;
 import com.codeminders.ardrone.data.logger.DataLogger;
@@ -385,7 +394,8 @@ public class ARDrone
             case 1:
                 return   new ARDrone10VideoDataDecoder(this, VIDEO_BUFFER_SIZE);
             case 2:
-                return   new TestH264DataDecoder(this); //new ARDrone20VideoDataDecoder(this, VIDEO_BUFFER_SIZE); //null; // no decoder implemented yet
+                disableAutomaticVideoBitrate(); // test this
+                return   new ARDrone20VideoDataDecoder(this);
             default:
                 return   new ARDrone10VideoDataDecoder(this, VIDEO_BUFFER_SIZE);
         }
@@ -700,6 +710,14 @@ public class ARDrone
         {
             for(DroneVideoListener l : image_listeners)
                 l.frameReceived(startX, startY, w, h, rgbArray, offset, scansize);
+        }
+    }
+    protected void videoFrameReceived(BufferedImage bi)
+    {
+        synchronized(image_listeners)
+        {
+            for(DroneVideoListener l : image_listeners)
+                l.frameReceived(bi);
         }
     }
 

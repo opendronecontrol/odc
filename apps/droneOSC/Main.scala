@@ -9,23 +9,17 @@ import spatial._
 import net._
 import platforms.ardrone._
 
-// import de.sciss.osc._
-
-// import scala.collection.mutable.Map
-
-
 object Main extends App {
 
-  var drone = new ARDrone with PositionController with OSCInterface
+  var drone = new ARDrone with PositionController with OSCInterfaceTrack
   // drone.osc.dump = true
   drone.osc.start()
 
-  var f = 0.f
-
-  drone.sensorData = Some(new SensorData())
 
   // Test sensor broadcasting without Drone
-  //
+  // var f = 0.f
+  // drone.sensorData = Some(new SensorData())
+  
   // while(true){
   // 	Thread.sleep(30)
   // 	f += .00001f

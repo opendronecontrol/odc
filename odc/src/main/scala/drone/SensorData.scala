@@ -27,6 +27,7 @@ case class Sensor[+T](n:String,v:T) extends SensorBase[T](n,v)
 
 case class Accelerometer(v:Vec3) extends SensorBase[Vec3]("accelerometer",v)
 case class Gyroscope(v:Vec3) extends SensorBase[Vec3]("gyroscope",v)
+
 case class Velocity(v:Vec3) extends SensorBase[Vec3]("velocity",v)
 case class Position(v:Vec3) extends SensorBase[Vec3]("position",v)
 

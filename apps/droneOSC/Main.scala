@@ -3,71 +3,39 @@ package org.opendronecontrol
 package apps
 package droneOSC
 
+import drone._
+import tracking._
 import spatial._
+import net._
 import platforms.ardrone._
 
-import de.sciss.osc._
+// import de.sciss.osc._
 
-import scala.collection.mutable.Map
+// import scala.collection.mutable.Map
 
 
 object Main extends App {
 
-  var drone = new ARDrone
+  var drone = new ARDrone with PositionController with OSCInterface
+  // drone.osc.dump = true
+  drone.osc.start()
 
-  DroneOSC.dump = true
-  DroneOSC.listen()
+  var f = 0.f
 
+  drone.sensorData = Some(new SensorData())
+
+  // Test sensor broadcasting without Drone
+  //
+  // while(true){
+  // 	Thread.sleep(30)
+  // 	f += .00001f
+  // 	val sensors = drone.sensorData.get
+  // 	sensors.set( Accelerometer(Vec3(f)))
+  // 	sensors.set( Gyroscope(Vec3(f*2.f)))
+  // 	sensors.set( Battery(f.toInt) )
+  // }
 }
 
-object DroneOSC{
-
-	var dump = false
-	val sync = new AnyRef
-	var callbacks = Map[String,(Float*)=>Unit]()
-	//var callbacks2 = Map[String,(Float,Float)=>Unit]()
-
-	def clear() = callbacks.clear()
-	def bind( s:String, f:(Float*)=>Unit) = callbacks += s -> f
-
-	def listen(port:Int=8000){
-		import Main.drone
-
-		println( s"Listening for drone commands on port $port" )
-		println( "	Example Commands: ")
-		println( "		/connect 192.168.1.1")
-		println( "		/takeOff")
-		println( "		/move 0.1 0.0 0.0 0.0")
-		println( "		/led 4 5.0 5")
-		println( "		/land")
-		println( "		/disconnect")
-
-		val cfg         = UDP.Config()
-	  cfg.localPort   = port  // 0x53 0x4F or 'SO'
-	  val rcv         = UDP.Receiver( cfg )
-
-	  def f(s:String)(v:Float*) = {println(s)}
-
-	  if( dump ) rcv.dump( Dump.Both )
-	  rcv.action = {
-	  	case (Message("/connect", ip:String), _) => drone.ip = ip; drone.connect()
-	  	case (Message("/disconnect"), _) => drone.disconnect
-	  	case (Message("/takeOff"), _) => drone.takeOff
-	  	case (Message("/land"), _) => drone.land
-	  	case (Message("/move",x:Float,y:Float,z:Float,r:Float), _) => drone.move(x,y,z,r)
-	  	// case (Message("/moveTo",a:Float,b:Float,c:Float,d:Float), _) => drone.moveTo(a,b,c,d)
-
-	  	case (Message("/led",a:Int, f:Float, d:Int), _) => drone.playLed(a,f,d)
-
-	  	case (Message("/quit"), _) => println("quit.."); rcv.close(); sys.exit(0);
-	    // case (Message( name, vals @ _* ), _) =>
-	    //   callbacks.getOrElse(name, f(name)_ )(vals.asInstanceOf[Seq[Float]]:_*)
-	     
-	    case (p, addr) => println( "Ignoring: " + p + " from " + addr )
-	  }
-	  rcv.connect()
-	}
-}
 
 
 

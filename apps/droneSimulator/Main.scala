@@ -22,9 +22,9 @@ object Main extends App with GLAnimatable{
   GLScene.push(this)
 
   //simulation objects
-  val simDrone = new SimDrone
+  val simDrone = new SimDrone with PositionController
   val simBody = Primitive3D.cube(Pose(), Vec3(0.5f,.05f,.5f))
-  val simControl = new PositionTrackingController(simDrone)
+  val simControl = simDrone //new PositionTrackingController(simDrone)
 
   // Plots - 2d
   var plots = new ListBuffer[Plot2D]()
@@ -86,7 +86,7 @@ object Main extends App with GLAnimatable{
   }
   override def step(dt:Float){
   	live.step(dt)
-  	moveCube.pose.pos = simControl.destPose.pos
+  	moveCube.pose.pos = simControl.tracker.destPose.pos
 
   	simDrone.step(dt)
     simBody.pose = simDrone.sPose

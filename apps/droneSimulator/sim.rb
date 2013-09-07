@@ -3,6 +3,7 @@ require 'java'
 #### import packages ####
 module M
   include_package "com.fishuyo.io"
+  include_package "com.fishuyo.io.leap"
   include_package "com.fishuyo.maths"
   include_package "com.fishuyo.spatial"
   include_package "com.fishuyo.graphics"
@@ -21,7 +22,7 @@ end
 ###########################
 
 $simDrone = Main.simDrone
-$simControl = Main.simControl
+$simControl = Main.simControl.tracker
 # $control = Main.control
 
 $simDrone.sPose.setIdentity() #pos.set(0,0,0)
@@ -32,7 +33,7 @@ Main.traces[0].color2.set(0,1,0)
 $simControl.posKp.set(0.5,1.5,0.5)
 $simControl.posKi.set(0.0,0,0.0)
 $simControl.posKd.set(20,40,20)
-$simControl.posKdd.set(10,0,10)
+$simControl.posKdd.set(0,0,0)
 
 # $simControl.setMaxEuler(0.5)
 # $control.setMaxEuler(0.4)
@@ -123,12 +124,46 @@ Trackpad.bind( lambda{|i,f|      # i -> number of fingers detected
 	elsif mz < -6.0 then mz = -6.0 end
 })
 
+Leap.clear()
+Leap.connect()
+Leap.bind( lambda{ |frame|
+	return if frame.hands().isEmpty()
+	hand = frame.hands().get(0)
+	count = hand.fingers().count()
+	if count == 3
+		$simDrone.takeOff()
+		return
+	elsif count < 2
+		$simDrone.land()
+		return
+	end
+
+	# return if hand.fingers().count() < 3
+	normal = hand.palmNormal()
+	dir = hand.direction()
+	pos = hand.palmPosition()
+	y  = pos.getY() - 160.0
+
+	if y > 0.0 and y < 10.0 then
+		y = 0.0
+	elsif y > 10.0
+		y = y - 10.0
+	end
+
+	y = y / 100.0
+	y = -1.0 if y < -1.0
+	y = 1.0 if y > 1.0
+	# quat = Quat.apply(1,0,0,0).fromEuler(Vec3.apply( dir.pitch(), -dir.yaw(), normal.roll() ))
+
+	$simDrone.move(-normal.roll(),y,dir.pitch() - 0.15 ,0)
+})
 
 ######## Step function called each frame #######
 
 def step(dt)
 
 	# Step Position Controller
+
 	pos = $simDrone.sPose.pos
 	pos = Vec3.new(pos.x,pos.y,pos.z)
 	$simControl.step( pos.x,pos.y,pos.z,0.0 )

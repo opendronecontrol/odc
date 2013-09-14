@@ -37,9 +37,10 @@ import com.codeminders.ardrone.commands.TakeOffCommand;
 import com.codeminders.ardrone.data.ARDroneDataReader;
 import com.codeminders.ardrone.data.ChannelProcessor;
 import com.codeminders.ardrone.data.decoder.ardrone10.ARDrone10NavDataDecoder;
+// import com.codeminders.ardrone.data.decoder.ardrone20.ARDrone20NavDataDecoder;
 import com.codeminders.ardrone.data.decoder.ardrone10.ARDrone10VideoDataDecoder;
 import com.codeminders.ardrone.data.decoder.ardrone20.ARDrone20VideoDataDecoder;
-import com.codeminders.ardrone.decoder.TestH264DataDecoder;
+// import com.codeminders.ardrone.decoder.TestH264DataDecoder;
 import com.codeminders.ardrone.data.logger.ARDroneDataReaderAndLogWrapper;
 import com.codeminders.ardrone.data.logger.DataLogger;
 import com.codeminders.ardrone.data.navdata.FlyingState;
@@ -140,7 +141,7 @@ public class ARDrone
     private static final int                VIDEO_PORT        = 5555;
     private static final int                CONTROL_PORT      = 5559;
     
-    private static final int                NAVDATA_BUFFER_SIZE = 4096;
+    private static final int                NAVDATA_BUFFER_SIZE = 1024; //4096;
     private static final int                VIDEO_BUFFER_SIZE = 100 * 1024;
 
     final static byte[]                     DEFAULT_DRONE_IP  = { (byte) 192, (byte) 168, (byte) 1, (byte) 1 };
@@ -177,6 +178,8 @@ public class ARDrone
     
     private DroneVersionReader              versionReader;
     private int                             versionNum;
+
+    private int coolItBuddy = 0;
 
     public ARDrone() throws UnknownHostException
     {
@@ -339,6 +342,7 @@ public class ARDrone
             try {
                 String versionStr = versionReader.readDroneVersion();
                 log.log(Level.FINER, "Drone version string: " + versionStr);
+                System.out.println("ARDrone version: " + versionStr);
                 version = Integer.parseInt(versionStr.substring(0, versionStr.indexOf('.')));
             } catch (NumberFormatException e) {
                 log.log(Level.SEVERE, "Failed to discover drone version. Using configuration for drone version: " + version, e);
@@ -356,7 +360,7 @@ public class ARDrone
             enableAutomaticVideoBitrate();
 
             NavDataDecoder nav_data_decoder = (null == ext_nav_data_decoder) ?
-                    new  ARDrone10NavDataDecoder(this, NAVDATA_BUFFER_SIZE)
+                    getNavDecoder(version) //new  ARDrone10NavDataDecoder(this, NAVDATA_BUFFER_SIZE)
                     :
                     ext_nav_data_decoder;
                     
@@ -389,6 +393,18 @@ public class ARDrone
         }
     }
 
+    private NavDataDecoder getNavDecoder(int version) throws IOException {
+        switch (version) {
+            case 1:
+                return   new ARDrone10NavDataDecoder(this, NAVDATA_BUFFER_SIZE);
+            case 2:
+                return   new ARDrone10NavDataDecoder(this, NAVDATA_BUFFER_SIZE);
+            default:
+                return   new ARDrone10NavDataDecoder(this, NAVDATA_BUFFER_SIZE);
+        }
+      
+    }
+    
     private VideoDataDecoder getVideoDecoder(int version) throws IOException {
         switch (version) {
             case 1:
@@ -532,7 +548,8 @@ public class ARDrone
     {
         if(nd.isBatteryTooLow() || nd.isNotEnoughPower())
         {
-            log.severe("Battery pb " + nd.toString());
+            //if(coolItBuddy++ % 20 == 0) log.severe("Battery pb " + nd.toString());
+            if(coolItBuddy++ % 60 == 0) System.out.println("Battery is getting low: " + nd.getBattery() );
         }
 
         synchronized(emergency_mutex)

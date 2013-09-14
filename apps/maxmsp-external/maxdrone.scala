@@ -8,7 +8,7 @@
 
 import org.opendronecontrol.platforms.ardrone.ARDrone
 import org.opendronecontrol.tracking.PositionController
-import org.opendronecontrol.net.OSCInterface
+import org.opendronecontrol.net.OSCInterfaceTrack
 import org.opendronecontrol.spatial._
 
 import com.cycling74.max._
@@ -26,7 +26,7 @@ class DroneControl extends MaxObject {
   var ip = "192.168.1.1"
 
   // javadrone api ARDrone
-  var drone = new ARDrone with PositionController with OSCInterface
+  var drone = new ARDrone with PositionController with OSCInterfaceTrack
 
   // tracking controller
   var control = drone.tracker 
@@ -38,6 +38,7 @@ class DroneControl extends MaxObject {
   println("OpenDroneControl version 0.1")
   
   LoadLibraryPath.unsafeAddDir(".") //hack to make native libraries visible in current directory
+  LoadLibraryPath.unsafeAddDir("./lib") //hack to make native libraries visible in ./lib directory
 
 
 
@@ -113,13 +114,6 @@ class DroneControl extends MaxObject {
 
   def step(p:Pose) = control.step(p)
 
-
-
-
-  /*
-  * Configuration
-  */
-
   def setPDGainsXZ( p1:Float, d1:Float, dd:Float ) = {
     control.posKp.set( p1, control.posKp.y, p1)
     control.posKd.set( d1, control.posKd.y, d1)
@@ -135,6 +129,23 @@ class DroneControl extends MaxObject {
     // control.rotKd = d1
   }
 
+  def tracker( args:Array[Atom] ){
+    val com = args(0).getString
+    com match {
+      case "posThresh" => drone.tracker.posThresh = args(1).getFloat
+      case "yawThresh" => drone.tracker.yawThresh = args(1).getFloat
+      case "rotateFirst" => drone.tracker.yawThresh = args(1).getInt
+      case "useHover" => drone.tracker.yawThresh = args(1).getInt
+      case "patrol" => drone.tracker.yawThresh = args(1).getInt
+      case _ => println(s"unknown command $com for tracker module")
+    }
+  }
+
+
+  /*
+  * Drone Configuration
+  */
+
   def config(value:Array[Atom]){
     var a:Any = null
     var name = value(0).getString
@@ -144,7 +155,7 @@ class DroneControl extends MaxObject {
       else if( value(1).isFloat ) a = value(1).getFloat
       else if( value(1).isString ) a = value(1).getString
     }
-    
+
     drone.config(name,a)
   }
 
@@ -197,7 +208,6 @@ class DroneControl extends MaxObject {
       case v:Vec3 => outlet(1, Array[Atom](Atom.newAtom(name),Atom.newAtom(v.x),Atom.newAtom(v.y),Atom.newAtom(v.z)))
     }
   }
-
 
   /*
   * OSC Interface

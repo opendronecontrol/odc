@@ -54,4 +54,5 @@ class SensorData {
   }
 
   def bind(f:Callback) = callback = f
+  def unbind() = callback = (s:SensorBase[Any]) => ()
 }

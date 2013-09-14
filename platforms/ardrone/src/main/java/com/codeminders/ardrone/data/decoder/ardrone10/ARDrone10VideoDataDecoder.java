@@ -41,6 +41,7 @@ public class ARDrone10VideoDataDecoder extends VideoDataDecoder {
                     notifyDroneWithDecodedFrame(0, 0, vi.getWidth(), vi.getHeight(), vi.getJavaPixelData(), 0, vi.getWidth());
                 }
             } catch (IOException e) {
+                System.out.println(e);
                 log.log(Level.SEVERE, " Error reading data from data input stream. Stopping decoding thread", e);
                 try {
                     reader.reconnect();

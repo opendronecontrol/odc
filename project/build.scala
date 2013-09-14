@@ -69,12 +69,10 @@ object Settings {
     mergeStrategies in Proguard += ProguardMerge.discard("META-INF/.*".r),
     options in Proguard += """ 
       -keep class DroneControl { *; }
-      -keep class org.opendronecontrol.spatial.Vec3
-      -keep class org.opendronecontrol.spatial.Quat
-      -keep class org.opendronecontrol.spatial.Pose
-      -keep class org.opendronecontrol.platforms.ardrone.ARDrone
-      -keep class org.opendronecontrol.tracking.PositionTrackingController
-      -keep class com.cycling74.max.MaxObject
+      -keep class org.opendronecontrol.** {*;}
+      -keep class com.cycling74.max.** {*;}
+      -keep class com.cycling74.jitter.** {*;}
+      #-keep class com.cycling74.max.MaxObject
 
 
 
@@ -115,6 +113,11 @@ object Settings {
 
       """
   )
+      // -keep class org.opendronecontrol.spatial.Vec3
+      // -keep class org.opendronecontrol.spatial.Quat
+      // -keep class org.opendronecontrol.spatial.Pose
+      // -keep class org.opendronecontrol.platforms.ardrone.ARDrone
+      // -keep class org.opendronecontrol.tracking.PositionTrackingController
   // val proguardScala =
 
   val oldscala = """
@@ -176,10 +179,10 @@ object Settings {
                       new ExactFilter("seer-desktop.jar") | new ExactFilter("monido-core_2.10-0.1.2.jar") | new ExactFilter("gdx.jar") |
                       new ExactFilter("gdx-natives.jar") | new ExactFilter("gdx-backend-lwjgl.jar") | new ExactFilter("gdx-backend-lwjgl-natives.jar")
     val maxFilter = new ExactFilter("max.jar") | new ExactFilter("jitter.jar")
-    val odcFilter = new ExactFilter("h264-decoder-1.0.jar")
+    // val odcFilter = new ExactFilter("h264-decoder-1.0.jar")
     IO.unzip(zipFile, seerDest, seerFilter)
     IO.unzip(zipFile, maxDest, maxFilter)
-    IO.unzip(zipFile, odcDest, odcFilter)
+    // IO.unzip(zipFile, odcDest, odcFilter)
 
     // Destroy the file.
     zipFile.delete

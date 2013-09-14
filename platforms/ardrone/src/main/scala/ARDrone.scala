@@ -37,7 +37,7 @@ class ARDrone(var ip:String="192.168.1.1") extends DroneBase {
 
 
   def connect(){
-    if( drone != null){
+    if( drone.isDefined ){
       println("Drone already connected.")
       return
     }else if( connecting ){
@@ -368,6 +368,7 @@ class ARDroneVideoStream( val drone:JD ) extends VideoStream with DroneVideoList
       case 1 => drone.selectVideoChannel( JD.VideoChannel.VERTICAL_ONLY )
       case 2 => drone.selectVideoChannel( JD.VideoChannel.HORIZONTAL_IN_VERTICAL )
       case 3 => drone.selectVideoChannel( JD.VideoChannel.VERTICAL_IN_HORIZONTAL )
+      case _ => println(s"$m is not a valid video mode, try 0 - 3")
     }
   }
 }

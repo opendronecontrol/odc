@@ -5,6 +5,7 @@ package sim
 
 import drone._
 import tracking._
+import platforms.ardrone._
 
 import com.fishuyo._
 import maths._
@@ -23,6 +24,7 @@ object Main extends App with GLAnimatable{
 
   //simulation objects
   val simDrone = new SimDrone with PositionController
+  val realDrone = new ARDrone("192.168.3.1") with PositionController
   val simBody = Primitive3D.cube(Pose(), Vec3(0.5f,.05f,.5f))
   val simControl = simDrone //new PositionTrackingController(simDrone)
 

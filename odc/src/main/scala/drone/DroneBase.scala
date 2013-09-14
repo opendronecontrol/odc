@@ -55,6 +55,7 @@ abstract class DroneBase {
     * }}}
     */
   def hasVideo() = video.isDefined
+  def videoStream = video.get
   var video:Option[VideoStream] = None
 
   /** sensor data should be implemented by extending [[org.opendronecontrol.drone.SensorData]]
@@ -65,6 +66,7 @@ abstract class DroneBase {
     * }}}
     */
   def hasSensorData() = sensorData.isDefined
+  def sensors = sensorData.get
   var sensorData:Option[SensorData] = None
 
 }

@@ -105,6 +105,11 @@ public class ARDrone20VideoDataDecoder extends VideoDataDecoder {
 			throw new RuntimeException(
 					"could not open video decoder for container");
 
+		// causes additional latency!!!???
+		// videoCoder.setProperty("vprofile", "baseline");
+		// videoCoder.setProperty("tune", "zerolatency");
+
+
 		IVideoResampler resampler = null;
 		if (videoCoder.getPixelType() != IPixelFormat.Type.BGR24) {
 			// if this stream is not in BGR24, we're going to need to
@@ -249,7 +254,8 @@ public class ARDrone20VideoDataDecoder extends VideoDataDecoder {
 						}
 					} // end of while
 				} catch (Exception exc) {
-					exc.printStackTrace();
+					System.out.println(exc);
+					// exc.printStackTrace();
 				}
 			} else {
 				/*

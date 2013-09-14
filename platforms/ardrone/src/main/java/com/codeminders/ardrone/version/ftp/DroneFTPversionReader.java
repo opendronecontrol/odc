@@ -29,11 +29,11 @@ public class DroneFTPversionReader implements DroneVersionReader {
         InputStream is = null;
         ByteArrayOutputStream  bos = null;
         try {        
-            log.info("Attempting to read AR Drone version using FTP. Version file is: "+ ftpVersionFileLocation);
+            // log.info("Attempting to read AR Drone version using FTP. Version file is: "+ ftpVersionFileLocation);
             URL url = new URL(ftpVersionFileLocation);
             URLConnection ftpConnection = url.openConnection();
             ftpConnection.setConnectTimeout(1000*5);
-            log.info(ftpVersionFileLocation + "- Connection Opened");
+            // log.info(ftpVersionFileLocation + "- Connection Opened");
             
             is = ftpConnection.getInputStream();
             bos = new ByteArrayOutputStream();

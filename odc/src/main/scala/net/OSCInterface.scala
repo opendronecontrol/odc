@@ -90,7 +90,7 @@ class OSCServer(val drone:DroneBase, val tracker:PositionTrackingController=null
 	  rcv.connect()
 	}
 
-	def stop() = { println("OSC server shutting down.."); rcv.close(); out.close(); }
+	def stop() = { println("OSC server shutting down.."); drone.sensorData.foreach(_.unbind); rcv.close(); out.close(); }
 
 	def broadcastSensors(port:Int=8001) = sendSensors("255.255.255.255",port)
 

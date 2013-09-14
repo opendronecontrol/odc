@@ -33,7 +33,7 @@ public class ARDrone10NavDataDecoder extends NavDataDecoder {
         while (!done) {
             try {
                 
-                pauseCheck();
+                // pauseCheck();
                 
                 int len = reader.readDataBlock(buffer);
 
@@ -47,7 +47,8 @@ public class ARDrone10NavDataDecoder extends NavDataDecoder {
                     }
                 }
             } catch (IOException e) {
-                log.log(Level.SEVERE, " Error reading data from data input stream. Stopping decoding thread", e);
+                System.out.println(e + "in NavDataDecoder");
+                // log.log(Level.SEVERE, " Error reading data from data input stream. Stopping decoding thread", e);
                 try {
                     reader.reconnect();
                 } catch (IOException e1) {

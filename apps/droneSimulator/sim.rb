@@ -9,6 +9,10 @@ module M
   include_package "com.fishuyo.graphics"
   include_package "com.fishuyo.util"
   include_package "org.opendronecontrol.apps.sim"
+  include_package "org.opendronecontrol.platforms.ardrone"
+  include_package "org.opendronecontrol.drone"
+  include_package "org.opendronecontrol.tracking"
+  include_package "org.opendronecontrol.net"
 end
 
 class Object
@@ -21,11 +25,11 @@ class Object
 end
 ###########################
 
-$simDrone = Main.simDrone
-$simControl = Main.simControl.tracker
+$simDrone = Main.realDrone # Main.simDrone
+$simControl = Main.realDrone.tracker #$simDrone.tracker
 # $control = Main.control
 
-$simDrone.sPose.setIdentity() #pos.set(0,0,0)
+# $simDrone.sPose.setIdentity() #pos.set(0,0,0)
 Main.traces[0].color2.set(0,1,0)
 
 ######## Drone Control Config #########
@@ -52,8 +56,9 @@ Keyboard.bind("f", lambda{
 	end
 	fly = !fly 
 }) 
-
-Keyboard.bind("c", lambda{ $control.connect(); })
+Keyboard.bind(" ", lambda{ $simDrone.land(); puts "land" })
+Keyboard.bind("c", lambda{ $simDrone.connect(); })
+Keyboard.bind("x", lambda{ $simDrone.disconnect(); })
 
 xzSpeed = 0.7
 ySpeed = 1.0
@@ -155,7 +160,7 @@ Leap.bind( lambda{ |frame|
 	y = 1.0 if y > 1.0
 	# quat = Quat.apply(1,0,0,0).fromEuler(Vec3.apply( dir.pitch(), -dir.yaw(), normal.roll() ))
 
-	$simDrone.move(-normal.roll(),y,dir.pitch() - 0.15 ,0)
+	$simDrone.move(-normal.roll(),y,dir.pitch() - 0.15 , dir.yaw() * 0.0 )
 })
 
 ######## Step function called each frame #######
@@ -164,33 +169,33 @@ def step(dt)
 
 	# Step Position Controller
 
-	pos = $simDrone.sPose.pos
-	pos = Vec3.new(pos.x,pos.y,pos.z)
-	$simControl.step( pos.x,pos.y,pos.z,0.0 )
+	# pos = $simDrone.sPose.pos
+	# pos = Vec3.new(pos.x,pos.y,pos.z)
+	# # $simControl.step( pos.x,pos.y,pos.z,0.0 )
 	
-	# add data points to plots
-	Main.plots[0].apply($simDrone.sAcceleration.x)
-	Main.plots[2].apply($simDrone.sVelocity.x)
-	Main.plots[4].apply($simDrone.sPose.pos.x)
-	# puts pos
+	# # add data points to plots
+	# Main.plots[0].apply($simDrone.sAcceleration.x)
+	# Main.plots[2].apply($simDrone.sVelocity.x)
+	# Main.plots[4].apply($simDrone.sPose.pos.x)
+	# # puts pos
 
-	# add Vec3 point to 3d trace of drones position
-	Main.traces[0].apply(pos)
+	# # add Vec3 point to 3d trace of drones position
+	# Main.traces[0].apply(pos)
 
-	# have plots follow camera
-	if Main.plotsFollowCam
-		i=0
-		Main.plots.foreach do |p|
-			pos = Camera.nav.pos + Camera.nav.uf()*1.5
-			j = i/2
-			pos += Camera.nav.ur()*(j*0.6-1.0)
-			pos += Camera.nav.uu()*0.5
+	# # have plots follow camera
+	# if Main.plotsFollowCam
+	# 	i=0
+	# 	Main.plots.foreach do |p|
+	# 		pos = Camera.nav.pos + Camera.nav.uf()*1.5
+	# 		j = i/2
+	# 		pos += Camera.nav.ur()*(j*0.6-1.0)
+	# 		pos += Camera.nav.uu()*0.5
 
-			p.pose.pos.lerpTo( pos, 0.1)
-			p.pose.quat.slerpTo( Camera.nav.quat, 0.1)
-			i += 1
-		end
-	end
+	# 		p.pose.pos.lerpTo( pos, 0.1)
+	# 		p.pose.quat.slerpTo( Camera.nav.quat, 0.1)
+	# 		i += 1
+	# 	end
+	# end
 end
 
 # ### Tracker ###

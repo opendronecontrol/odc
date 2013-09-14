@@ -24,6 +24,24 @@ Currently [ODC] is a first attempt at creating a generalized, open, extensible D
 
 [ODC] comes with a simple simulator program to test out flight paths and ideas without the hardware
 
+
+
+Build
+===
+
+Build Max mxj external
+
+```sbt
+./sbt "project maxmsp-external" package
+```
+
+Run example Apps
+```sbt
+./sbt "project droneSimulator" run
+./sbt "project droneOSC" run
+```
+
+
 Example Usage
 ===
 
@@ -65,18 +83,3 @@ drone.osc.sendSensors("192.168.1.255", 8001)
 
 ```
 
-
-Build
-===
-
-Build Max mxj external
-
-```sbt
-./sbt "project maxmsp-external" package
-```
-
-Run example Apps
-```sbt
-./sbt "project droneSimulator" run
-./sbt "project droneOSC" run
-```

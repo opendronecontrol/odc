@@ -42,8 +42,12 @@ while( t < 3000){
   drone.forward(0.5)
   Thread.sleep(200)
   drone.back(0.5)
-  if( drone.hasSensorData() )
+  if( drone.hasSensorData() ){
+    println( drone.sensors("velocity").value )
     println( drone.sensors("gyroscope").value )
+    println( drone.sensors("altimeter").value )
+    println( drone.sensors("battery").value )
+  }
   t += 200
 }
 

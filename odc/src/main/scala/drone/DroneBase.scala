@@ -3,6 +3,9 @@
 package org.opendronecontrol
 package drone
 
+import net._
+import tracking._
+
 /** Abstract interface to a drone platform implementation.
   * 
   * Implemented in [[org.opendronecontrol.platforms.ardrone.ARDrone]] and [[org.opendronecontrol.drone.SimDrone]]
@@ -54,9 +57,9 @@ abstract class DroneBase {
     * drone.video = Some(new MyVideoStream)
     * }}}
     */
-  def hasVideo() = video.isDefined
-  def videoStream = video.get
-  var video:Option[VideoStream] = None
+  def hasVideo() = videoStream.isDefined
+  def video = videoStream.get
+  var videoStream:Option[VideoStream] = None
 
   /** sensor data should be implemented by extending [[org.opendronecontrol.drone.SensorData]]
     *
@@ -65,9 +68,16 @@ abstract class DroneBase {
     * drone.sensorData = Some(new MySensorData)
     * }}}
     */
-  def hasSensorData() = sensorData.isDefined
+  def hasSensors() = sensorData.isDefined
   def sensors = sensorData.get
   var sensorData:Option[SensorData] = None
+
+
+  /** osc interface module to control drone via network messages */
+  val osc = new OSCInterface(this)
+
+  /** tracking adds moveTo command given some regularlly updated spatial information  */
+  val tracking = new PositionTrackingController(this)
 
 }
 

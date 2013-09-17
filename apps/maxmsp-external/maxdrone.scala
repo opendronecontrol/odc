@@ -7,8 +7,6 @@
 */
 
 import org.opendronecontrol.platforms.ardrone.ARDrone
-import org.opendronecontrol.tracking.PositionController
-import org.opendronecontrol.net.OSCInterfaceTrack
 import org.opendronecontrol.spatial._
 
 import com.cycling74.max._
@@ -26,10 +24,10 @@ class DroneControl extends MaxObject {
   var ip = "192.168.1.1"
 
   // javadrone api ARDrone
-  var drone = new ARDrone with PositionController with OSCInterfaceTrack
+  var drone = new ARDrone
 
   // tracking controller
-  var control = drone.tracker 
+  var tracking = drone.tracking
 
   // hold last video frame as jitter matrix
   private var mat: JitterMatrix = _
@@ -61,7 +59,7 @@ class DroneControl extends MaxObject {
   // def dance(anim:Int, dur:Int) = drone.dance(anim, dur)
   
   def move( x: Float, y: Float, z: Float, rv: Float ){
-    control.navigating = false
+    tracking.stop
     drone.move(x,y,z,rv) 
   }
   def forward(v:Float) = move(0,0,-v,0)
@@ -73,7 +71,7 @@ class DroneControl extends MaxObject {
   def cw(v:Float) = move(0,0,0,v)
   def ccw(v:Float) = move(0,0,0,-v)
 
-  def hover = { control.navigating=false; drone.hover }
+  def hover = { tracking.stop; drone.hover }
 
   def reboot() = drone.reboot()
 
@@ -85,25 +83,25 @@ class DroneControl extends MaxObject {
   */
 
   def lookAt( x:Float, y:Float, z:Float ){
-    control.isLookingAt = true
-    control.lookAtDest = false
-    control.lookingAt = Vec3(x,y,z)
+    tracking.isLookingAt = true
+    tracking.lookAtDest = false
+    tracking.lookingAt = Vec3(x,y,z)
   }
   def dontLook(){
-    control.isLookingAt = false
-    control.lookAtDest = false
+    tracking.isLookingAt = false
+    tracking.lookAtDest = false
   }
 
   def moveTo( x:Float,y:Float,z:Float,qx:Float,qy:Float,qz:Float,qw:Float ){
-    moveTo( Pose(Vec3(x,y,z),Quat(qw,qx,qy,qz)) )
+    tracking.moveTo( Pose(Vec3(x,y,z),Quat(qw,qx,qy,qz)) )
   }
   def moveTo( x:Float,y:Float,z:Float,w:Float=0.f ){
     moveTo( Pose(Vec3(x,y,z),Quat().fromEuler((0.f,w*math.Pi.toFloat/180.f,0.f)) ) )
   }
-  def moveTo( p:Pose ) = control.moveTo(p)
+  def moveTo( p:Pose ) = tracking.moveTo(p)
 
-  def addWaypoint( x:Float,y:Float,z:Float,w:Float ) = control.addWaypoint(x,y,z,w)
-  def clearWaypoints() = control.clearWaypoints
+  def addWaypoint( x:Float,y:Float,z:Float,w:Float ) = tracking.addWaypoint(x,y,z,w)
+  def clearWaypoints() = tracking.clearWaypoints
   
   def step(x:Float,y:Float,z:Float,qx:Float,qy:Float,qz:Float,qw:Float){
     step( Pose(Vec3(x,y,z),Quat(qw,qx,qy,qz)))
@@ -112,32 +110,34 @@ class DroneControl extends MaxObject {
     step( Pose(Vec3(x,y,z),Quat().fromEuler((0.f,w*math.Pi.toFloat/180.f,0.f))) )
   }
 
-  def step(p:Pose) = control.step(p)
+  def step(p:Pose) = tracking.step(p)
+
+  def stepUsingInternalSensors() = tracking.stepUsingInternalSensors()
 
   def setPDGainsXZ( p1:Float, d1:Float, dd:Float ) = {
-    control.posKp.set( p1, control.posKp.y, p1)
-    control.posKd.set( d1, control.posKd.y, d1)
-    control.posKdd.set( dd, control.posKdd.y, dd)
+    tracking.posKp.set( p1, tracking.posKp.y, p1)
+    tracking.posKd.set( d1, tracking.posKd.y, d1)
+    tracking.posKdd.set( dd, tracking.posKdd.y, dd)
   }
   def setPDGainsY( p1:Float, d1:Float, dd:Float ) = {
-    control.posKp.y = p1
-    control.posKd.y = d1
-    control.posKdd.y = dd
+    tracking.posKp.y = p1
+    tracking.posKd.y = d1
+    tracking.posKdd.y = dd
   }
   def setPDGainsRot( p1:Float, d1:Float ) = {
-    control.rotKp = p1
-    // control.rotKd = d1
+    tracking.rotKp = p1
+    // tracking.rotKd = d1
   }
 
-  def tracker( args:Array[Atom] ){
+  def tracking( args:Array[Atom] ){
     val com = args(0).getString
     com match {
-      case "posThresh" => drone.tracker.posThresh = args(1).getFloat
-      case "yawThresh" => drone.tracker.yawThresh = args(1).getFloat
-      case "rotateFirst" => drone.tracker.yawThresh = args(1).getInt
-      case "useHover" => drone.tracker.yawThresh = args(1).getInt
-      case "patrol" => drone.tracker.yawThresh = args(1).getInt
-      case _ => println(s"unknown command $com for tracker module")
+      case "posThresh" => drone.tracking.posThresh = args(1).getFloat
+      case "yawThresh" => drone.tracking.yawThresh = args(1).getFloat
+      case "rotateFirst" => drone.tracking.yawThresh = args(1).getInt
+      case "useHover" => drone.tracking.yawThresh = args(1).getInt
+      case "patrol" => drone.tracking.yawThresh = args(1).getInt
+      case _ => println(s"unknown command $com for tracking module")
     }
   }
 
@@ -188,20 +188,20 @@ class DroneControl extends MaxObject {
 
   // prints all available sensor names
   def listSensors(){
-    if( drone.sensorData.isEmpty){
+    if( !drone.hasSensors){
       println("no sensor data received")
       return
     }
-    drone.sensorData.get.getSensors().foreach( println(_) )
+    drone.sensors.listSensors()
   }
 
   // outputs sensor name and value out of the right outlet
   def sensor( name:String ){
-    if( drone.sensorData.isEmpty){
+    if( !drone.hasSensors){
       println("no sensor data received")
       return
     }
-    drone.sensorData.get(name).value match {
+    drone.sensors(name).value match {
       case v:Float => outlet(1, Array[Atom](Atom.newAtom(name),Atom.newAtom(v)))
       case v:Int => outlet(1, Array[Atom](Atom.newAtom(name),Atom.newAtom(v)))
       case v:Boolean => outlet(1, Array[Atom](Atom.newAtom(name),Atom.newAtom(v)))
@@ -232,17 +232,17 @@ class DroneControl extends MaxObject {
     }
     val com = args(0).getString
     com match {
-      case "start" => drone.video.get.start
-      case "stop" => drone.video.get.stop
+      case "start" => drone.video.start
+      case "stop" => drone.video.stop
       case _ => println(s"unknown command $com for video module")
     }
   }
 
   // bang outputs latest video frame
   override def bang(){
-    if( drone.hasVideo && drone.video.get() != null ){
+    if( drone.hasVideo && drone.video.getFrame() != null ){
       if( mat == null ) mat = new JitterMatrix
-      mat.copyBufferedImage(drone.video.get())
+      mat.copyBufferedImage(drone.video.getFrame())
       outlet(0,"jit_matrix",mat.getName())
     }else post("no frames received.")
   }

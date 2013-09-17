@@ -7,14 +7,16 @@ import drone._
 
 import scala.collection.mutable.Queue
 
-/** PositionController Module
-  *   this is a mixin trait for DroneBase that adds absolute positioning based on some position sensors or tracking system
-  */
-trait PositionController extends DroneBase {
-  val tracker = new PositionTrackingController(this)
-  def moveTo(p:Pose){ tracker.moveTo(p) }
-  def step(p:Pose){ tracker.step(p) }
-}
+// /** PositionController Module
+//   *   this is a mixin trait for DroneBase that adds absolute positioning based on some position sensors or tracking system
+//   */
+// trait PositionController extends DroneBase {
+//   val tracker = new PositionTrackingController(this)
+//   def moveTo(p:Pose){ tracker.moveTo(p) }
+//   def step(p:Pose){ tracker.step(p) }
+// }
+
+
 
 /** PositionController
   *   Used to handle tracking system state and calculate control parameters pased on a destination position and yaw
@@ -73,6 +75,8 @@ class PositionTrackingController( val drone:DroneBase ) {
   var useHover = false  // use the hover command as default non action
   var patrol = false   // loop waypoints
 
+  var t0:Long = 0
+  var dt = 0.f
   
   //////////////////////////////////////////////////////////////////////
   // member functions
@@ -102,6 +106,8 @@ class PositionTrackingController( val drone:DroneBase ) {
     destPose = Pose(p)
     navigating = true
   }
+
+  def stop() = navigating = false
 
   // add a waypoint of moveTo locations to a queue
   def addWaypoint( x:Float,y:Float,z:Float,w:Float ) = {
@@ -135,6 +141,12 @@ class PositionTrackingController( val drone:DroneBase ) {
   }
 
   def step(p:Pose){
+
+    if( drone.hasSensors() ){
+      drone.sensors.set(Position(p.pos))
+      drone.sensors.set(Sensor[Quat]("quat",p.quat))
+    }
+
     if( homePose == null ) homePose = Pose(p)    // save initial pose for later
     if( !navigating ) return										 // only run if navigating flag set
 
@@ -208,6 +220,46 @@ class PositionTrackingController( val drone:DroneBase ) {
     if(hover) drone.hover
     else if(rotFirst && rot != 0.f) drone.move(0,0,0,rot)
     else drone.move(control.x,control.y,control.z,rot)      
+  }
+
+  def stepUsingInternalSensors(){
+    if( !drone.hasSensors() ){
+      // println("no sensors detected")
+      return
+    }
+
+    if( t0 == 0 ){ 
+      t0 = System.currentTimeMillis()
+      return
+    }
+    val t = System.currentTimeMillis()
+    dt = (t - t0).toFloat
+    t0 = t
+
+    var pose = Pose()
+    var localVel = Vec3()
+
+    if( drone.sensors.hasSensor("velocity") ){
+      localVel = drone.sensors("velocity").vec * .001f
+    }
+
+    if( drone.sensors.hasSensor("gyroscope")){
+      val euler = drone.sensors("gyroscope").vec * Vec3(1,-1,-1) * (math.Pi/180.f).toFloat // to radians as expected for Quat
+
+      val quat = Quat().fromEuler(euler)
+      pose.quat.set(quat)
+
+      // calculate velocity in world frame from gyroscope measured orientation
+      val worldVel = quat.toX * -localVel.y + quat.toY*localVel.z + quat.toZ*localVel.x //TODO check direction of veloctiy is correct
+      val pos = tPose.pos + worldVel // * dt
+      pose.pos.set(pos)
+    }
+
+    if( drone.sensors.hasSensor("altimeter")){
+      pose.pos.y = drone.sensors("altimeter").float
+    }
+
+    step(pose)
   }
 
 

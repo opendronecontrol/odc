@@ -9,10 +9,6 @@ module M
   include_package "com.fishuyo.graphics"
   include_package "com.fishuyo.util"
   include_package "org.opendronecontrol.apps.sim"
-  include_package "org.opendronecontrol.platforms.ardrone"
-  include_package "org.opendronecontrol.drone"
-  include_package "org.opendronecontrol.tracking"
-  include_package "org.opendronecontrol.net"
 end
 
 class Object
@@ -25,23 +21,20 @@ class Object
 end
 ###########################
 
-$simDrone = Main.realDrone # Main.simDrone
-$simControl = Main.realDrone.tracker #$simDrone.tracker
-# $control = Main.control
+# $drone = Main.simDrone
+$drone = Main.realDrone
 
-# $simDrone.sPose.setIdentity() #pos.set(0,0,0)
+Main.simDrone.sPose.setIdentity()
 Main.traces[0].color2.set(0,1,0)
 
 ######## Drone Control Config #########
 
-$simControl.posKp.set(0.5,1.5,0.5)
-$simControl.posKi.set(0.0,0,0.0)
-$simControl.posKd.set(20,40,20)
-$simControl.posKdd.set(0,0,0)
+# $drone.tracking.posKp.set(0.5,1.5,0.5)
+# $drone.tracking.posKi.set(0.0,0,0.0)
+# $drone.tracking.posKd.set(20,40,20)
+# $drone.tracking.posKdd.set(0,0,0)
 
-# $simControl.setMaxEuler(0.5)
-# $control.setMaxEuler(0.4)
-# $control.clearEmergency()
+# $drone.config("maxEulerAngle", 0.5)
 
 ########### Keyboard input #############
 Keyboard.clear()
@@ -50,40 +43,46 @@ Keyboard.use()
 fly = false
 Keyboard.bind("f", lambda{ 
 	if fly
-		$simDrone.land();
+		$drone.land();
 	else
-		$simDrone.takeOff();
+		$drone.takeOff();
 	end
 	fly = !fly 
 }) 
-Keyboard.bind(" ", lambda{ $simDrone.land(); puts "land" })
-Keyboard.bind("c", lambda{ $simDrone.connect(); })
-Keyboard.bind("x", lambda{ $simDrone.disconnect(); })
+Keyboard.bind(" ", lambda{ $drone.land(); puts "land" })
+
+
+Keyboard.bind("c", lambda{ $drone.connect(); })
+Keyboard.bind("x", lambda{ $drone.disconnect(); })
 
 xzSpeed = 0.7
 ySpeed = 1.0
+rotSpeed = 0.7
 x=0.0
 y=0.0
 z=0.0
 r=0.0
-Keyboard.bind("j", lambda{ x=-0.5; $simDrone.move(x,y,z,r) })
-Keyboard.bind("l", lambda{ x=xzSpeed; $simDrone.move(x,y,z,r) })
-Keyboard.bind("i", lambda{ z=-xzSpeed; $simDrone.move(x,y,z,r) })
-Keyboard.bind("k", lambda{ z=xzSpeed; $simDrone.move(x,y,z,r) })
-Keyboard.bind("y", lambda{ y=ySpeed; $simDrone.move(x,y,z,r) })
-Keyboard.bind("h", lambda{ y=-ySpeed; $simDrone.move(x,y,z,r) })
+Keyboard.bind("j", lambda{ x=-xzSpeed; $drone.move(x,y,z,r) })
+Keyboard.bind("l", lambda{ x=xzSpeed; $drone.move(x,y,z,r) })
+Keyboard.bind("i", lambda{ z=-xzSpeed; $drone.move(x,y,z,r) })
+Keyboard.bind("k", lambda{ z=xzSpeed; $drone.move(x,y,z,r) })
+Keyboard.bind("y", lambda{ y=ySpeed; $drone.move(x,y,z,r) })
+Keyboard.bind("h", lambda{ y=-ySpeed; $drone.move(x,y,z,r) })
+Keyboard.bind("u", lambda{ r=-rotSpeed; $drone.move(x,y,z,r) })
+Keyboard.bind("o", lambda{ r=rotSpeed; $drone.move(x,y,z,r) })
 Keyboard.bindUp("j", lambda{ x=0.0 })
 Keyboard.bindUp("l", lambda{ x=0.0 })
 Keyboard.bindUp("i", lambda{ z=0.0 })
 Keyboard.bindUp("k", lambda{ z=0.0 })
 Keyboard.bindUp("y", lambda{ y=0.0 })
 Keyboard.bindUp("h", lambda{ y=0.0 })
+Keyboard.bindUp("u", lambda{ r=0.0 })
+Keyboard.bindUp("o", lambda{ r=0.0 })
 
 Keyboard.bind("g", lambda{ Main.togglePlotFollow() })
 Keyboard.bind("n", lambda{ 
 	ra = Randf.apply(-2.0,2.0,false)
-	$simControl.addWaypoint(ra[],1.0,ra[],0)
-	$control.addWaypoint(ra[],1.0,ra[],0)
+	$drone.tracking.addWaypoint(ra[],1.0,ra[],0)
 })
 
 
@@ -106,18 +105,14 @@ Trackpad.bind( lambda{|i,f|      # i -> number of fingers detected
 		if delay2 > 5				 
 			mx = mx + f[2]*0.05
 			mz = mz + f[3]*-0.05
-			$simControl.moveTo(mx,my,mz,0.0)
-	 		# $control.moveTo(mx,my,mz,0.0)
-			# $simDrone.move(xx,0,-yy,0)
+			# $drone.tracking.moveTo(mx,my,mz,0.0)
 		end
 
 	# use three fingers to change destination on xy plane
 	elsif i == 3
 		mx = mx + f[2]*0.05
 		my = my + f[3]*0.05
-		$simControl.moveTo(mx,my,mz,0.0)
-		# $control.moveTo(mx,my,mz,0.0)
-		# $simDrone.move(0,yy,0,0)				 
+		# $drone.tracking.moveTo(mx,my,mz,0.0)
 	end
 
 	delay2 = 0 if i != 2
@@ -129,6 +124,10 @@ Trackpad.bind( lambda{|i,f|      # i -> number of fingers detected
 	elsif mz < -6.0 then mz = -6.0 end
 })
 
+
+
+######## Leap gesture input #########
+
 Leap.clear()
 Leap.connect()
 Leap.bind( lambda{ |frame|
@@ -136,10 +135,10 @@ Leap.bind( lambda{ |frame|
 	hand = frame.hands().get(0)
 	count = hand.fingers().count()
 	if count == 3
-		$simDrone.takeOff()
+		$drone.takeOff()
 		return
 	elsif count < 2
-		$simDrone.land()
+		$drone.land()
 		return
 	end
 
@@ -160,7 +159,7 @@ Leap.bind( lambda{ |frame|
 	y = 1.0 if y > 1.0
 	# quat = Quat.apply(1,0,0,0).fromEuler(Vec3.apply( dir.pitch(), -dir.yaw(), normal.roll() ))
 
-	$simDrone.move(-normal.roll(),y,dir.pitch() - 0.15 , dir.yaw() * 0.0 )
+	$drone.move(-normal.roll(),y,dir.pitch() - 0.15 , dir.yaw() * 0.0 )
 })
 
 ######## Step function called each frame #######
@@ -168,34 +167,49 @@ Leap.bind( lambda{ |frame|
 def step(dt)
 
 	# Step Position Controller
+	pos = Main.simDrone.sPose.pos
+	# Main.simDrone.tracking.step( pos.x,pos.y,pos.z,0.0 )
 
-	# pos = $simDrone.sPose.pos
-	# pos = Vec3.new(pos.x,pos.y,pos.z)
-	# # $simControl.step( pos.x,pos.y,pos.z,0.0 )
+	Main.realDrone.tracking.stop()
+	Main.realDrone.tracking.stepUsingInternalSensors()
 	
-	# # add data points to plots
-	# Main.plots[0].apply($simDrone.sAcceleration.x)
-	# Main.plots[2].apply($simDrone.sVelocity.x)
-	# Main.plots[4].apply($simDrone.sPose.pos.x)
-	# # puts pos
+	# add data points to plots
+	Main.plots[0].apply(Main.simDrone.sAcceleration.x)
+	Main.plots[2].apply(Main.simDrone.sVelocity.x)
+	Main.plots[4].apply(Main.simDrone.sPose.pos.x)
+	# puts pos
 
-	# # add Vec3 point to 3d trace of drones position
-	# Main.traces[0].apply(pos)
+	# update moveTo cube
+	pos = $drone.tracking.destPose.pos
+	Main.moveCube.pose.pos.set(pos.x,pos.y,pos.z)
 
-	# # have plots follow camera
-	# if Main.plotsFollowCam
-	# 	i=0
-	# 	Main.plots.foreach do |p|
-	# 		pos = Camera.nav.pos + Camera.nav.uf()*1.5
-	# 		j = i/2
-	# 		pos += Camera.nav.ur()*(j*0.6-1.0)
-	# 		pos += Camera.nav.uu()*0.5
+	# add Vec3 point to 3d trace of drones position
+	if $drone.hasSensors()
+		vel = $drone.sensors.get("velocity").vec
+		pos = $drone.sensors.get("position").vec
+		pos = Vec3.new(pos.x,pos.y,pos.z)
+		Main.traces[0].apply(pos)
+		Main.realDroneBody.pose.pos.set(pos)
+		puts pos
+		# puts $drone.sensors.get("quat").value.toZ().x 
+		# puts $drone.sensors.get("quat").value.toZ().y
+		# puts $drone.sensors.get("quat").value.toZ().z
+	end
 
-	# 		p.pose.pos.lerpTo( pos, 0.1)
-	# 		p.pose.quat.slerpTo( Camera.nav.quat, 0.1)
-	# 		i += 1
-	# 	end
-	# end
+	# have plots follow camera
+	if Main.plotsFollowCam
+		i=0
+		Main.plots.foreach do |p|
+			pos = Camera.nav.pos + Camera.nav.uf()*1.5
+			j = i/2
+			pos += Camera.nav.ur()*(j*0.6-1.0)
+			pos += Camera.nav.uu()*0.5
+
+			p.pose.pos.lerpTo( pos, 0.1)
+			p.pose.quat.slerpTo( Camera.nav.quat, 0.1)
+			i += 1
+		end
+	end
 end
 
 # ### Tracker ###

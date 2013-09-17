@@ -3,15 +3,12 @@ package org.opendronecontrol
 package apps
 package droneOSC
 
-import drone._
-import tracking._
 import spatial._
-import net._
 import platforms.ardrone._
 
 object Main extends App {
 
-  var drone = new ARDrone with PositionController with OSCInterfaceTrack
+  var drone = new ARDrone
   // drone.osc.dump = true
   drone.osc.start()
 

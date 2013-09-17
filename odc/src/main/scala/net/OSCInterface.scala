@@ -11,29 +11,31 @@ import Implicits._
 
 import scala.collection.mutable.Map
 
+// Mixins unecessary - remove
+// /** OSCInterface Module
+//   *   this is a mixin trait for DroneBase that listens for
+//   *   commands over the network via the OpenSoundControl Protocol
+//   */
+// trait OSCInterface extends DroneBase{
+// 	val osc = new OSCServer(this)
+// }
 
-/** OSCInterface Module
-  *   this is a mixin trait for DroneBase that listens for
-  *   commands over the network via the OpenSoundControl Protocol
-  */
-trait OSCInterface extends DroneBase{
-	val osc = new OSCServer(this)
-}
+// /** OSCInterfaceTrack Module
+//   * This is a mixin trait for DroneBase that listens for
+//   * commands over the network via the OpenSoundControl Protocol.
+//   * Also handles messages to [[org.opendronecontrol.tracking.PositionController]] module
+//   */
+// trait OSCInterfaceTrack extends PositionController {
+// 	val osc = new OSCServer(this, this.tracker)
+// }
 
-/** OSCInterfaceTrack Module
-  * This is a mixin trait for DroneBase that listens for
-  * commands over the network via the OpenSoundControl Protocol.
-  * Also handles messages to [[org.opendronecontrol.tracking.PositionController]] module
-  */
-trait OSCInterfaceTrack extends PositionController {
-	val osc = new OSCServer(this, this.tracker)
-}
 
-/** OSCServer
+
+/** OSCInterface
 	*  Implements drone related OSC message handling
 	*
 	*/
-class OSCServer(val drone:DroneBase, val tracker:PositionTrackingController=null) {
+class OSCInterface(val drone:DroneBase) {
 
 	var dump = false
 	val cfg = UDP.Config()
@@ -73,7 +75,7 @@ class OSCServer(val drone:DroneBase, val tracker:PositionTrackingController=null
 	  	case (Message("/hover"), _) => drone.hover
 
 
-	  	case (Message("/moveTo",a:Float,b:Float,c:Float,d:Float), _) => if(tracker != null) tracker.moveTo(a,b,c,d)
+	  	case (Message("/moveTo",a:Float,b:Float,c:Float,d:Float), _) => drone.tracking.moveTo(a,b,c,d)
 	  	
 
 	  	case (Message("/sendSensors", ip:String, port:Int), _) => sendSensors(ip,port)
@@ -95,7 +97,7 @@ class OSCServer(val drone:DroneBase, val tracker:PositionTrackingController=null
 	def broadcastSensors(port:Int=8001) = sendSensors("255.255.255.255",port)
 
 	def sendSensors(ip:String="localhost", port:Int=8001){
-		if( drone.sensorData.isEmpty ){
+		if( !drone.hasSensors() ){
 			println("Drone has no available sensor data, make sure you are properly connected..")
 			return
 		}
@@ -105,7 +107,7 @@ class OSCServer(val drone:DroneBase, val tracker:PositionTrackingController=null
   	out.channel.socket.setBroadcast(true)
   	out.connect	 		
 
-		drone.sensorData.get.bind( (s) => {
+		drone.sensors.bind( (s) => {
 			val name = s.name
 			val path = s"/$name"
 			try{

@@ -8,8 +8,6 @@ import scala.collection.mutable.Map
 
 
 /** Base Class for sensor data case classes
-  * 
-  * 
   */
 class SensorBase[+T](val name:String, val value:T){
 	def vec = value.asInstanceOf[Vec3]
@@ -35,6 +33,9 @@ case class Altimeter(v:Float) extends SensorBase[Float]("altimeter",v)
 case class Battery(v:Int) extends SensorBase[Int]("battery",v)
 
 
+/** Holds map of all current Sensor readings
+  *
+  */
 class SensorData {
 
   type Callback = (SensorBase[Any]) => Unit
@@ -44,10 +45,14 @@ class SensorData {
   val sensorData = Map[String,SensorBase[Any]]()
 
   def hasSensor(name:String) = sensorData.keys.exists( _ == name.toLowerCase )
-  def getSensors() = sensorData.keys
+  def getSensorNames() = sensorData.keys
   def getSensorValues() = sensorData.values
+
+  def listSensors() = this.getSensorNames().foreach( println(_) )
+
   def apply(name:String) = sensorData(name)
 
+  def get(name:String) = this(name)
   def set(s:SensorBase[Any]) = {
   	sensorData(s.name) = s
   	callback(s)

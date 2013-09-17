@@ -55,9 +55,9 @@ class ARDrone(var ip:String="192.168.1.1") extends DroneBase {
           d.waitForReady(3000)
           println("ARDrone connected and ready!")
           d.trim
-          _this.video = Some(new ARDroneVideoStream(d))
+          _this.videoStream = Some(new ARDroneVideoStream(d))
           _this.sensorData = Some(new ARDroneSensorData(d))
-          d.addImageListener(_this.video.get.asInstanceOf[DroneVideoListener])
+          d.addImageListener(_this.videoStream.get.asInstanceOf[DroneVideoListener])
           d.addNavDataListener(_this.sensorData.get.asInstanceOf[NavDataListener])
           drone = Some(d)
           connecting = false
@@ -77,7 +77,7 @@ class ARDrone(var ip:String="192.168.1.1") extends DroneBase {
       println("Drone not connected.")
       return
     }
-    if( sensorData.get("flying").bool ) drone.get.land
+    if( sensors("flying").bool ) drone.get.land
     drone.get.disconnect
     drone = None
     ready = false
@@ -190,7 +190,7 @@ class ARDrone(var ip:String="192.168.1.1") extends DroneBase {
       case "maxEulerAngle" if value.isInstanceOf[Float] => setMaxEuler(value.asInstanceOf[Float])
       case "maxVerticalSpeed" if value.isInstanceOf[Float] => setMaxVertical(value.asInstanceOf[Float])
       case "maxRotationSpeed" if value.isInstanceOf[Float] => setMaxRotation(value.asInstanceOf[Float])
-      case "videoMode" if value.isInstanceOf[Int] => video.foreach( _.config("mode",value.asInstanceOf[Int])) 
+      case "videoMode" if value.isInstanceOf[Int] => videoStream.foreach( _.config("mode",value.asInstanceOf[Int])) 
 
       case _ => println(s"unknown config key '$key' for value $value")
     }
@@ -217,7 +217,7 @@ class ARDrone(var ip:String="192.168.1.1") extends DroneBase {
       println("Drone not connected.")
       return
     }
-    if( sensorData.get("flying").bool ) land
+    if( sensors("flying").bool ) land
     else takeOff
   }
 

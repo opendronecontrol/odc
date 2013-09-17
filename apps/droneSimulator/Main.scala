@@ -23,10 +23,14 @@ object Main extends App with GLAnimatable{
   GLScene.push(this)
 
   //simulation objects
-  val simDrone = new SimDrone with PositionController
-  val realDrone = new ARDrone("192.168.3.1") with PositionController
+  val simDrone = new SimDrone
   val simBody = Primitive3D.cube(Pose(), Vec3(0.5f,.05f,.5f))
-  val simControl = simDrone //new PositionTrackingController(simDrone)
+  simBody.color.set(RGB(0.f,0.6f,0.f))
+
+  // real drone
+  val realDrone = new ARDrone("192.168.1.1")
+  val realDroneBody = Primitive3D.cube(Pose(Vec3(100),Quat()), Vec3(0.5f,.05f,.5f))
+  realDroneBody.color.set(RGB(.6f,0.f,0.f))
 
   // Plots - 2d
   var plots = new ListBuffer[Plot2D]()
@@ -59,7 +63,6 @@ object Main extends App with GLAnimatable{
   traces += new Trace3D(100)
 
   //real drone
-  // val realDroneBody = Primitive3D.cube(Pose(), Vec3(0.5f,.05f,.5f))
   // val control = new new PositionTrackingController(realDrone)
 
   // ground
@@ -79,16 +82,16 @@ object Main extends App with GLAnimatable{
   /* member methods */
 
   override def draw(){
-  	//realDroneBody.draw()
   	ground.draw()
   	moveCube.draw()
     simBody.draw()
+    realDroneBody.draw()
+
   	plots.foreach( _.draw() )
   	traces.foreach( _.draw() )
   }
   override def step(dt:Float){
   	live.step(dt)
-  	moveCube.pose.pos = simControl.tracker.destPose.pos
 
   	simDrone.step(dt)
     simBody.pose = simDrone.sPose

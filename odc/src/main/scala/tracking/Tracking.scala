@@ -49,7 +49,7 @@ class PositionTrackingController( val drone:DroneBase ) {
   var destPose = Pose()
   var tPose = Pose()
   var tVel = Vec3()
-  //var tAcc = Vec3()
+  var tAcc = Vec3()
 
   var posError = Vec3()
   var posErrorIntegral = Vec3()
@@ -261,6 +261,88 @@ class PositionTrackingController( val drone:DroneBase ) {
 
     step(pose)
   }
+
+  // def stepUsingGyroscope(){
+  //   if( !drone.hasSensors() ){
+  //     // println("no sensors detected")
+  //     return
+  //   }
+
+  //   if( t0 == 0 ){ 
+  //     t0 = System.currentTimeMillis()
+  //     return
+  //   }
+  //   val t = System.currentTimeMillis()
+  //   dt = (t - t0).toFloat
+  //   t0 = t
+
+  //   var pose = Pose()
+
+  //   if( drone.sensors.hasSensor("gyroscope")){
+  //     val euler = drone.sensors("gyroscope").vec * Vec3(1,-1,-1) * (math.Pi/180.f).toFloat // to radians as expected for Quat
+
+  //     val quat = Quat().fromEuler(euler)
+  //     pose.quat.set(quat)
+
+  //     // calculate velocity in world frame from gyroscope measured orientation
+  //     val worldVel = quat.toX * -localVel.y + quat.toY*localVel.z + quat.toZ*localVel.x //TODO check direction of veloctiy is correct
+  //     val pos = tPose.pos + worldVel // * dt
+  //     pose.pos.set(pos)
+  //   }
+
+  //   if( drone.sensors.hasSensor("altimeter")){
+  //     pose.pos.y = drone.sensors("altimeter").float
+  //   }
+
+  //   step(pose)
+  // }
+
+  def stepVision( pos:Vec3, yawOffset:Float ){
+
+    //position passed in from camera positioned above the fly zone
+
+    if( !drone.hasSensors() ){
+      // println("no sensors detected")
+      return
+    }
+
+    if( t0 == 0 ){ 
+      t0 = System.currentTimeMillis()
+      return
+    }
+    val t = System.currentTimeMillis()
+    dt = (t - t0).toFloat
+    t0 = t
+
+    var pose = Pose()
+    pose.pos.set(pos.x, pos.z, pos.y)
+
+
+    var localVel = Vec3()
+
+    if( drone.sensors.hasSensor("velocity") ){
+      localVel = drone.sensors("velocity").vec * .001f
+    }
+
+    if( drone.sensors.hasSensor("gyroscope")){
+      var euler = drone.sensors("gyroscope").vec * Vec3(1,-1,-1)
+      euler.y += yawOffset
+      euler = euler * (math.Pi/180.f).toFloat // to radians as expected for Quat
+
+      val quat = Quat().fromEuler(euler)
+      pose.quat.set(quat)
+    } else {
+      return
+    }
+
+    if( drone.sensors.hasSensor("altimeter")){
+      pose.pos.y = drone.sensors("altimeter").float
+    }
+
+    step(pose)
+  }
+
+
 
 
 }

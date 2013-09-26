@@ -116,6 +116,8 @@ class OSCInterface(val drone:DroneBase) {
 		      case v:Int => out ! Message(path,v)
 		      case v:Boolean => out ! Message(path,v)
 		      case v:Vec3 => out ! Message(path,v.x,v.y,v.z)
+		      case v:Quat => out ! Message(path,v.w,v.x,v.y,v.z)
+		      case _ => ()
 	    	}
     	} catch {
     		case e:Exception => println(e)

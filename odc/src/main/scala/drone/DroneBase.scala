@@ -29,14 +29,14 @@ abstract class DroneBase {
 
   def hover(){}
 
-  def forward(v:Float) = move(0,0,-v,0)
-  def back(v:Float) = move(0,0,v,0)
-  def left(v:Float) = move(-v,0,0,0)
-  def right(v:Float) = move(v,0,0,0)
-  def up(v:Float) = move(0,v,0,0)
-  def down(v:Float) = move(0,-v,0,0)
-  def cw(v:Float) = move(0,0,0,v)
-  def ccw(v:Float) = move(0,0,0,-v)
+  // def forward(v:Float) = move(0,0,-v,0)
+  // def back(v:Float) = move(0,0,v,0)
+  // def left(v:Float) = move(-v,0,0,0)
+  // def right(v:Float) = move(v,0,0,0)
+  // def up(v:Float) = move(0,v,0,0)
+  // def down(v:Float) = move(0,-v,0,0)
+  // def cw(v:Float) = move(0,0,0,v)
+  // def ccw(v:Float) = move(0,0,0,-v)
   
   /** command function is to handle drone specific commands
     *   @param com command name to be executed

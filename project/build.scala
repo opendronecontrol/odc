@@ -224,6 +224,14 @@ object odcBuild extends Build {
   ) dependsOn(backend_ardrone)
 
 
+  // examples
+  lazy val examples = Project(
+    "examples",
+    file("./examples")
+  ) dependsOn( backend_ardrone )
+
+
+
   // desktop apps
   lazy val apps = Project(
     "apps",
@@ -241,6 +249,12 @@ object odcBuild extends Build {
     file("apps/droneSimulator"),
     settings = Settings.seer //++ Settings.proguard
   ) dependsOn(backend_ardrone)
+
+  // lazy val droneVisionTracking = Project (
+  //   "droneVisionTracking",
+  //   file("apps/droneVisionTracking"),
+  //   settings = Settings.seer //++ Settings.proguard
+  // ) dependsOn(backend_ardrone)
 
 
 }

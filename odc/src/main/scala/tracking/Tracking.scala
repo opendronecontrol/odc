@@ -4,6 +4,7 @@ package tracking
 
 import spatial._
 import drone._
+import drone.sensors._
 
 import scala.collection.mutable.Queue
 

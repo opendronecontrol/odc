@@ -1,6 +1,7 @@
 
 package org.opendronecontrol
 package drone
+package video
 
 import java.awt.image.BufferedImage
 

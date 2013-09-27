@@ -5,6 +5,9 @@ package platforms.ardrone
 
 import spatial._
 import drone._
+import drone.sensors._
+import drone.video.VideoStream
+
 import net.SimpleTelnetClient
 
 import com.codeminders.ardrone.{ARDrone => JD}

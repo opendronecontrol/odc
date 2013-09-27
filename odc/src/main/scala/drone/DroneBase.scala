@@ -3,6 +3,8 @@
 package org.opendronecontrol
 package drone
 
+import sensors._
+import video._
 import net._
 import tracking._
 

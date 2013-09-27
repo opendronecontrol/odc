@@ -7,23 +7,21 @@ import platforms.ardrone._
 
 object DroneOSC extends App {
 
+  var port = 8000
+
+  try{ 
+    if( args.length >= 1) port = args(0).toInt
+  } catch{
+    case e:Exception => println( s"usage: droneOSC [port]")
+  }
+
+  // create a ARDrone client and start listening for OSC messages
   var drone = new ARDrone
-  // drone.osc.dump = true
-  drone.osc.start()
+  drone.osc.start(port)
 
-
-  // Test sensor broadcasting without Drone
-  // var f = 0.f
-  // drone.sensorData = Some(new SensorData())
-  
-  // while(true){
-  // 	Thread.sleep(30)
-  // 	f += .00001f
-  // 	val sensors = drone.sensorData.get
-  // 	sensors.set( Accelerometer(Vec3(f)))
-  // 	sensors.set( Gyroscope(Vec3(f*2.f)))
-  // 	sensors.set( Battery(f.toInt) )
-  // }
+  // wait for return then exit
+  Console.readLine
+  System.exit(0)
 }
 
 

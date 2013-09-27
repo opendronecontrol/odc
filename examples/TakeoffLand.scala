@@ -9,7 +9,7 @@ object TakeoffLand extends App {
 
   val drone = new ARDrone
   drone.connect()  
-  Thread.sleep(1000)
+  Thread.sleep(1000) // sleep to make sure the drone is ready for commands after connecting
   
   drone.takeOff()
   Thread.sleep(10000)

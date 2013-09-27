@@ -11,28 +11,28 @@ object GetSensorData extends App {
   val drone = new ARDrone
   drone.connect()    
 
-  // the sensors object is made when drone connects
-
   // option 1
+  // set a callback function called whenever a sensor is updated 
   drone.sensors.bind(  (s) => {
     println( s.name + ": " + s.value )
-    //println( s" ${s.name} : ${s.value}" ) // string interpolation
   })
   Thread.sleep(5000)
   
 
   // option 2
+  // get sensor value on demand
+  //
   // var t = 0
-
-  // while( t < 20000){    
-  //   Thread.sleep(30)
+  // var dt = 30
+  // while( t < 20000){             // loop for 20 seconds retreiving sensors every 30 ms   
   //   if( drone.hasSensors() ){
   //     println( "velocity: " + drone.sensors("velocity").value )
   //     println( "gyroscope: " + drone.sensors("gyroscope").value )
   //     println( "altimeter: " + drone.sensors("altimeter").value )
   //     println( "battery: " + drone.sensors("battery").value )
   //   }
-  //   t += 30
+  //   t += dt
+  //   Thread.sleep(dt)
   // }
 
   drone.disconnect()

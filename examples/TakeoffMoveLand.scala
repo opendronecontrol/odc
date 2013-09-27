@@ -12,32 +12,35 @@ object TakeoffMoveLand extends App {
   Thread.sleep(1000)
 
   drone.takeOff()
-  Thread.sleep(10000)
+  Thread.sleep(5000)
 
-  var t = 0
-  var forward = true
-  var step = 2000
+  var t = 0      // keep track of approximate total time
+  var dt = 30    // time per iteration of control loop
 
-  while( t < 20000){
+  var period = 3000 // movement oscillation period
 
-    if(t % step >= 1000){
-      forward = false
-    } else if(t % step >= 0) {
-      forward = true
-    }
+  // control loop
+  //  for smooth flight move commands should be sent at a consistent interval of 30ms
+  while( t < 10000){
 
-    if(forward) drone.move(0.0f, 0.0f, -0.1f, 0.0f)
-    else drone.move(0.0f, 0.0f, 0.1f, 0.0f)
-    Thread.sleep(100)
+    var phase = (t % period) / period.toFloat * (2*math.Pi)
+
+    var rot = math.sin(phase).toFloat
+
+    drone.move(0.0f, 0.0f, 0.0f, rot) // oscillate drone left/right
     
+    // print out some sensor data
     if( drone.hasSensors() ){
-      println( drone.sensors("velocity").value )
-      println( drone.sensors("gyroscope").value )
-      println( drone.sensors("altimeter").value )
-      println( drone.sensors("battery").value )
+      println( drone.sensors("velocity").vec )
+      println( drone.sensors("gyroscope").vec )
+      println( drone.sensors("altimeter").float )
+      println( drone.sensors("battery").int )
     }
-    t += 100
+
+    t += dt
+    Thread.sleep(dt)
   }
+
 
   drone.land()  
 

@@ -1,0 +1,53 @@
+
+package org.opendronecontrol
+package examples
+package demo2
+
+import spatial._
+import platforms.ardrone._
+
+object Main extends App {
+
+  val drone = new ARDrone
+  drone.connect()  
+  Thread.sleep(1000)
+
+  drone.takeOff()
+  Thread.sleep(10000)
+
+
+  // hover for 10 seconds
+  
+  // var t = 0
+  // var forward = true
+  // var step = 2000
+
+  // while( t < 10000){
+
+  //   if(t % step >= 1000){
+  //     forward = false
+  //   } else if(t % step >= 0) {
+  //     forward = true
+  //   }
+
+  //   if(forward) drone.move(0.0f, 0.0f, -0.1f, 0.0f)
+  //   else drone.move(0.0f, 0.0f, 0.1f, 0.0f)
+  //   Thread.sleep(100)
+    
+  //   if( drone.hasSensors() ){
+  //     println( drone.sensors("velocity").value )
+  //     println( drone.sensors("gyroscope").value )
+  //     println( drone.sensors("altimeter").value )
+  //     println( drone.sensors("battery").value )
+  //   }
+  //   t += 100
+  // }
+
+  drone.land()
+  // Thread.sleep(1000)
+
+  drone.disconnect()
+
+  System.exit(0)
+
+}

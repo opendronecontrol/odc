@@ -1,12 +1,11 @@
 
 package org.opendronecontrol
-package apps
-package droneOSC
+package examples
 
 import spatial._
 import platforms.ardrone._
 
-object Main extends App {
+object DroneOSC extends App {
 
   var drone = new ARDrone
   // drone.osc.dump = true

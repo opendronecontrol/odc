@@ -199,7 +199,7 @@ object odcBuild extends Build {
     "all",
     file("."),
     settings = Settings.common ++ unidocSettings
-  ) aggregate( odc, backend_ardrone, maxmsp_external, apps )
+  ) aggregate( odc, backend_ardrone, maxmsp_external )
 
   // common odc code
   lazy val odc = Project (
@@ -231,18 +231,6 @@ object odcBuild extends Build {
   ) dependsOn( backend_ardrone )
 
 
-
-  // desktop apps
-  lazy val apps = Project(
-    "apps",
-    file("./apps")
-  ) aggregate( droneOSC, droneSimulator )
-
-  // lazy val droneOSC = Project (
-  //   "droneOSC",
-  //   file("apps/droneOSC"),
-  //   settings = Settings.odc //++ Settings.proguard
-  // ) dependsOn(backend_ardrone)
 
   lazy val droneSimulator = Project (
     "droneSimulator",

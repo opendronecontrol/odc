@@ -45,8 +45,8 @@ class ARDrone(var ip:String="192.168.1.1") extends DroneBase {
     }
     connecting = true
     val _this = this
-    val t = new Thread(){
-      override def run(){
+    // val t = new Thread(){
+      // override def run(){
         try {
           val d = new JD( InetAddress.getByName(ip), 1000, 1000 )
          	println("connecting to ARDrone at " + ip + " ..." )
@@ -67,9 +67,9 @@ class ARDrone(var ip:String="192.168.1.1") extends DroneBase {
           case e: Exception => println("Drone connection failed."); e.printStackTrace 
           connecting = false
         }  
-      }
-    }
-    t.start
+      // }
+    // }
+    // t.start
   }
 
   def disconnect(){

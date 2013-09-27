@@ -46,8 +46,15 @@ class DroneControl extends MaxObject {
 
   def connect(){
     drone.ip = ip
-    drone.connect
+    val _this = this
+    val t = new Thread(){
+      override def run(){
+        _this.drone.connect 
+      }
+    }
+    t.start
   }
+  
   def disconnect() = drone.disconnect
   def reset() = drone.reset
   def takeOff() = drone.takeOff

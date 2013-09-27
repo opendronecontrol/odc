@@ -357,6 +357,7 @@ public class ARDrone
             cmd_sending_thread.start();
             
             enableVideo();
+            // disableVideo();
             enableAutomaticVideoBitrate();
 
             NavDataDecoder nav_data_decoder = (null == ext_nav_data_decoder) ?

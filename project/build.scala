@@ -238,11 +238,11 @@ object odcBuild extends Build {
     file("./apps")
   ) aggregate( droneOSC, droneSimulator )
 
-  lazy val droneOSC = Project (
-    "droneOSC",
-    file("apps/droneOSC"),
-    settings = Settings.odc //++ Settings.proguard
-  ) dependsOn(backend_ardrone)
+  // lazy val droneOSC = Project (
+  //   "droneOSC",
+  //   file("apps/droneOSC"),
+  //   settings = Settings.odc //++ Settings.proguard
+  // ) dependsOn(backend_ardrone)
 
   lazy val droneSimulator = Project (
     "droneSimulator",

@@ -52,8 +52,8 @@ Keyboard.bind("f", lambda{
 Keyboard.bind(" ", lambda{ $drone.land(); puts "land" })
 
 
-Keyboard.bind("c", lambda{ $drone.connect(); })
-Keyboard.bind("x", lambda{ $drone.disconnect(); })
+Keyboard.bind("c", lambda{ $drone.connect(); $drone.osc.start(8000) })
+Keyboard.bind("x", lambda{ $drone.disconnect(); $drone.osc.stop() })
 
 xzSpeed = 0.7
 ySpeed = 1.0
@@ -190,7 +190,7 @@ def step(dt)
 		pos = Vec3.new(pos.x,pos.y,pos.z)
 		Main.traces[0].apply(pos)
 		Main.realDroneBody.pose.pos.set(pos)
-		puts pos
+		# puts pos
 		# puts $drone.sensors.get("quat").value.toZ().x 
 		# puts $drone.sensors.get("quat").value.toZ().y
 		# puts $drone.sensors.get("quat").value.toZ().z

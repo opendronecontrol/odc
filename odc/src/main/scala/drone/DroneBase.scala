@@ -52,7 +52,7 @@ abstract class DroneBase {
     */
   def config(key:String, value:Any){}
 
-  /** video stream should be implemented by extending [[org.opendronecontrol.drone.VideoStream]]
+  /** video stream should be implemented by extending [[org.opendronecontrol.drone.video.VideoStream]]
     *
     * {{{
     * class MyVideoStream extends VideoStream {...}
@@ -63,7 +63,7 @@ abstract class DroneBase {
   def video = videoStream.get
   var videoStream:Option[VideoStream] = None
 
-  /** sensor data should be implemented by extending [[org.opendronecontrol.drone.SensorData]]
+  /** sensor data should be implemented by extending [[org.opendronecontrol.drone.sensors.SensorData]]
     *
     * {{{
     * class MySensorData extends SensorData {...}

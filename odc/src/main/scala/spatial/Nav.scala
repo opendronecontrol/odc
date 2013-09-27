@@ -1,3 +1,8 @@
+/*
+*   Port of al_Pose.hpp from AlloSystem
+*   https://github.com/AlloSphere-Research-Group/AlloSystem/blob/master/allocore/allocore/spatial/al_Pose.hpp 
+*/
+
 
 package org.opendronecontrol
 package spatial

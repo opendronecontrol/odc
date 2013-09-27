@@ -1,5 +1,7 @@
 /* 
 * Quaternions!
+*   Port of al_Quat.hpp from AlloSystem
+*   https://github.com/AlloSphere-Research-Group/AlloSystem/blob/master/allocore/allocore/math/al_Quat.hpp 
 */
 
 package org.opendronecontrol

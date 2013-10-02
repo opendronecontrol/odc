@@ -11,7 +11,7 @@ import Implicits._
 
 import scala.collection.mutable.Map
 
-// Mixins unecessary - remove
+// Mixins unecessary for now- remove
 // /** OSCInterface Module
 //   *   this is a mixin trait for DroneBase that listens for
 //   *   commands over the network via the OpenSoundControl Protocol

@@ -8,7 +8,7 @@ import spatial._
 
 class SimDrone extends DroneBase {
 
-  // simulation state -- represents the exact position velocity and acceleration for a given time
+  // simulation state -- represents the position velocity and acceleration for a given time
   var sPose = Pose()
 	var sVelocity = Vec3()
 	var sAcceleration = Vec3()
@@ -46,6 +46,11 @@ class SimDrone extends DroneBase {
 		sPose.quat.fromEuler(z*maxEuler,0.f,-x*maxEuler)
 		thrust = (-g.y + y)/sPose.uu().y
 		timeout = 0.f
+	}
+
+	def move(q:Quat){
+		sPose.quat.set(q)
+		thrust = (-g.y + y)/sPose.uu().y
 	}
 
 	override def hover() = { sPose.quat.setIdentity(); sVelocity.set(0,0,0)}

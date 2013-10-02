@@ -11,10 +11,14 @@ import scala.collection.mutable.Map
 /** Base Class for sensor data case classes
   */
 class SensorBase[+T](val name:String, val value:T){
-	def vec = value.asInstanceOf[Vec3]
-	def float = value.asInstanceOf[Float]
-	def int = value.asInstanceOf[Int]
-	def bool = value.asInstanceOf[Boolean]
+  def vec = value.asInstanceOf[Vec3]
+	def getVec3 = value.asInstanceOf[Vec3]
+  def float = value.asInstanceOf[Float]
+	def getFloat = value.asInstanceOf[Float]
+  def int = value.asInstanceOf[Int]
+	def getInt = value.asInstanceOf[Int]
+  def bool = value.asInstanceOf[Boolean]
+	def getBoolean = value.asInstanceOf[Boolean]
 }
 
 /** Case class extension of [[SensorBase]]

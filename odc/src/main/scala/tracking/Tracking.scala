@@ -263,40 +263,37 @@ class PositionTrackingController( val drone:DroneBase ) {
     step(pose)
   }
 
-  // def stepUsingGyroscope(){
-  //   if( !drone.hasSensors() ){
-  //     // println("no sensors detected")
-  //     return
-  //   }
+  // experimenting incomplete..
+  def stepUsingGyroscope(){
+    if( !drone.hasSensors() ){
+      // println("no sensors detected")
+      return
+    }
 
-  //   if( t0 == 0 ){ 
-  //     t0 = System.currentTimeMillis()
-  //     return
-  //   }
-  //   val t = System.currentTimeMillis()
-  //   dt = (t - t0).toFloat
-  //   t0 = t
+    if( t0 == 0 ){ 
+      t0 = System.currentTimeMillis()
+      return
+    }
+    val t = System.currentTimeMillis()
+    dt = (t - t0).toFloat
+    t0 = t
 
-  //   var pose = Pose()
+    var pose = Pose()
 
-  //   if( drone.sensors.hasSensor("gyroscope")){
-  //     val euler = drone.sensors("gyroscope").vec * Vec3(1,-1,-1) * (math.Pi/180.f).toFloat // to radians as expected for Quat
+    if( drone.sensors.hasSensor("gyroscope")){
+      val euler = drone.sensors("gyroscope").vec * Vec3(1,-1,-1) * (math.Pi/180.f).toFloat // to radians as expected for Quat
 
-  //     val quat = Quat().fromEuler(euler)
-  //     pose.quat.set(quat)
+      val quat = Quat().fromEuler(euler)
+      pose.quat.set(quat)
 
-  //     // calculate velocity in world frame from gyroscope measured orientation
-  //     val worldVel = quat.toX * -localVel.y + quat.toY*localVel.z + quat.toZ*localVel.x //TODO check direction of veloctiy is correct
-  //     val pos = tPose.pos + worldVel // * dt
-  //     pose.pos.set(pos)
-  //   }
+    }
 
-  //   if( drone.sensors.hasSensor("altimeter")){
-  //     pose.pos.y = drone.sensors("altimeter").float
-  //   }
+    if( drone.sensors.hasSensor("altimeter")){
+      pose.pos.y = drone.sensors("altimeter").float
+    }
 
-  //   step(pose)
-  // }
+    step(pose)
+  }
 
   def stepVision( pos:Vec3, yawOffset:Float ){
 

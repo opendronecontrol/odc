@@ -12,7 +12,7 @@ object TakeoffMoveLand extends App {
   Thread.sleep(1000)
 
   drone.takeOff()
-  Thread.sleep(5000)
+  Thread.sleep(5000) // wait for drone to takeoff and stabalize
 
   var t = 0      // keep track of approximate total time
   var dt = 30    // time per iteration of control loop

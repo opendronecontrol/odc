@@ -50,7 +50,7 @@ class SimDrone extends DroneBase {
 
 	def move(q:Quat){
 		sPose.quat.set(q)
-		thrust = (-g.y + y)/sPose.uu().y
+		thrust = (-g.y)/sPose.uu().y
 	}
 
 	override def hover() = { sPose.quat.setIdentity(); sVelocity.set(0,0,0)}
@@ -82,7 +82,7 @@ class SimDrone extends DroneBase {
 		}
 
 		timeout += dt
-		if( timeout > .25f) move(0,0,0,0)
+		if( timeout > .42f) move(0,0,0,0)
 
 	}
 

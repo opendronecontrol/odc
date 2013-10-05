@@ -68,7 +68,7 @@ object Settings {
     merge in Proguard := true,
     mergeStrategies in Proguard += ProguardMerge.discard("META-INF/.*".r),
     options in Proguard += """ 
-      -keep class DroneControl { *; }
+      -keep class OpenDroneControl { *; }
       -keep class org.opendronecontrol.** {*;}
       -keep class com.cycling74.max.** {*;}
       -keep class com.cycling74.jitter.** {*;}
@@ -233,8 +233,14 @@ object odcBuild extends Build {
 
 
   lazy val droneSimulator = Project (
-    "droneSimulator",
+    "DroneSimulator",
     file("apps/droneSimulator"),
+    settings = Settings.seer //++ Settings.proguard
+  ) dependsOn(backend_ardrone)
+
+  lazy val leapController = Project (
+    "LeapController",
+    file("apps/leapController"),
     settings = Settings.seer //++ Settings.proguard
   ) dependsOn(backend_ardrone)
 

@@ -15,7 +15,7 @@ import MaxObject._
 
 import java.net._
 
-class DroneControl extends MaxObject {
+class OpenDroneControl extends MaxObject {
 
 
   declareAttribute("ip")

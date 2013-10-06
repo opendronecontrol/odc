@@ -32,8 +32,27 @@ import scala.collection.mutable.Map
 
 
 /** OSCInterface
-	*  Implements drone related OSC message handling
+	* Implements drone related OSC message handling.
+	*  
+	* This can be started by running:
+	* {{{
+	*		val drone = new ARDrone
+	*		drone.osc.start(8000) // listen for messages on port 8000
+	* }}}
 	*
+	*	Example Messages:
+	*	{{{
+	*	/connect
+	*	/sendSensors "192.168.1.255" 8001
+	*	/takeOff
+	*	/move 0.0 0.0 0.0 0.5
+	*	/config "maxEulerAngle" 0.2
+	*	/config "maxVerticalSpeed" 1.0
+	*	/led [pattern:Int] [frequency:Float] [duration(seconds):Int]
+	*	/animation [pattern:Int] [duration(seconds):Int]
+	*	/land
+	*	/disconnect
+	*	}}}
 	*/
 class OSCInterface(val drone:DroneBase) {
 

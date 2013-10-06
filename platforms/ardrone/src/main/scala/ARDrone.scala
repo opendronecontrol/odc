@@ -32,13 +32,6 @@ class ARDrone(var ip:String="192.168.1.1") extends DroneBase {
   var maxRot = 3.0f    //(.7 - 6.11 rad/s)
 
 
-  /********************************************************************************************************
-  * 
-  * DroneBase methods 
-  *
-  *********************************************************************************************************/
-
-
   def connect(){
     if( drone.isDefined ){
       println("Drone already connected.")
@@ -123,6 +116,45 @@ class ARDrone(var ip:String="192.168.1.1") extends DroneBase {
     drone.get.hover
   }
 
+  /**
+    * Implemented commands:
+    *
+    * command: led [pattern:Int] [frequency:Float] [duration(seconds):Int]
+    * {{{
+    *   patterns:
+    *           BLINK_GREEN_RED(0), BLINK_GREEN(1), BLINK_RED(2), BLINK_ORANGE(3), SNAKE_GREEN_RED(4), FIRE(5), STANDARD(6), RED(
+    *            7), GREEN(8), RED_SNAKE(9), BLANK(10), RIGHT_MISSILE(11), LEFT_MISSILE(12), DOUBLE_MISSILE(13), FRONT_LEFT_GREEN_OTHERS_RED(
+    *            14), FRONT_RIGHT_GREEN_OTHERS_RED(15), REAR_RIGHT_GREEN_OTHERS_RED(16), REAR_LEFT_GREEN_OTHERS_RED(17), LEFT_GREEN_RIGHT_RED(
+    *            18), LEFT_RED_RIGHT_GREEN(19), BLINK_STANDARD(20);
+    * }}}
+    *
+    * command: animation [pattern:Int] [duration(seconds):Int]
+    * {{{
+    *    patterns:
+    *            PHI_M30_DEG(0)
+    *            PHI_30_DEG(1)
+    *            THETA_M30_DEG(2)
+    *            THETA_30_DEG(3)
+    *            THETA_20DEG_YAW_200DEG(4)
+    *            THETA_20DEG_YAW_M200DEG(5)
+    *            TURNAROUND(6)
+    *            TURNAROUND_GODOWN(7)
+    *            YAW_SHAKE(8)
+    *            YAW_DANCE(9)
+    *            PHI_DANCE(10)
+    *            THETA_DANCE(11)
+    *            VZ_DANCE(12)
+    *            WAVE(13)
+    *            PHI_THETA_MIXED(14)
+    *            DOUBLE_PHI_THETA_MIXED(15)
+    *            Flip Forward(16) (2.0 only)
+    *            Flip Back(17) (2.0 only)
+    *            Flip Left(18) (2.0 only)
+    *            Flip Right(19) (2.0 only)
+    *            ANIM_MAYDAY(20)
+    * }}}
+    *
+    */
   override def command(com:String, args:Any*){
     com match {
       case "help" => println("""
@@ -199,11 +231,7 @@ class ARDrone(var ip:String="192.168.1.1") extends DroneBase {
     }
   }
 
-  /********************************************************************************************************
-  * 
-  * ARDrone helper methods 
-  *
-  *********************************************************************************************************/
+  // helper methods
 
   def clearEmergency(){
     if( drone.isEmpty ){

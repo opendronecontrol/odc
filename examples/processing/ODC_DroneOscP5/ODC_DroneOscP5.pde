@@ -1,10 +1,16 @@
-/**
- * Control ARDrone using oscP5
- *   Connects to a OpenDroneControl client that is listening for OSC messages.
- *   This can be used to allow multiple connections / sketches communicating 
- *   with the same drone. 
- */
- 
+/*
+///    [ODC] Processing Example - DroneoscP5 - Tim Wood 2013 - fishuyo@gmail.com || http://fishuyo.com/  
+///    Control ARDrone using oscP5
+///    Connects to a OpenDroneControl client that is listening for OSC messages.
+///    This can be used to allow multiple connections / sketches communicating 
+///    with the same drone. 
+///
+///    Press 'u' to takeoff and land
+///
+///    if you've downloaded this code from the ODC github you may be missing the ODC processing libraries, please visit the ODC website to download them
+///    http://www.opendronecontrol.org/
+*/
+
 import oscP5.*;
 import netP5.*;
   
@@ -53,5 +59,18 @@ void oscEvent(OscMessage theOscMessage) {
       println(" gyroscope: "+x+", "+y+", "+z);
       return;
     }  
+  }
+}
+
+
+void keyPressed(){
+  if (key =='u'){
+    if(flying==false){
+      myMessage = new OscMessage("/takeOff");
+      oscP5.send(myMessage, address);
+    } else{
+      myMessage = new OscMessage("/land");
+      oscP5.send(myMessage, address);
+    }
   }
 }

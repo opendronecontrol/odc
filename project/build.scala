@@ -179,7 +179,7 @@ object Settings {
                         new ExactFilter("libLeapJava.dylib") | new ExactFilter("libopencv_java245.dylib")
                       
                 
-    val seerFilter =  new ExactFilter("GlulogicMT.jar") | new ExactFilter("seer-core_2.10-0.1.jar") | new ExactFilter("LibLeap.jar")
+    val seerFilter =  new ExactFilter("GlulogicMT.jar") | new ExactFilter("seer-core_2.10-0.1.jar") | new ExactFilter("LibLeap.jar") |
                       new ExactFilter("seer-desktop_2.10-0.1.jar") | new ExactFilter("monido-core_2.10-0.1.2.jar") | new ExactFilter("gdx.jar") |
                       new ExactFilter("gdx-natives.jar") | new ExactFilter("gdx-backend-lwjgl.jar") | new ExactFilter("gdx-backend-lwjgl-natives.jar") |
                       new ExactFilter("opencv-245.jar") | new ExactFilter("seer-leap_2.10-0.1.jar") | new ExactFilter("seer-multitouch_2.10-0.1.jar") |

@@ -23,7 +23,7 @@ object Main extends App with GLAnimatable{
   val drone = new ARDrone("192.168.1.1")
 
   // quad to render video stream on
-  val quad = Quad()
+  val quad = Model(Quad())
 
   var frame:BufferedImage = _
   var texData:FloatBuffer = _
@@ -49,6 +49,9 @@ object Main extends App with GLAnimatable{
         w = frame.getWidth
         h = frame.getHeight
 
+        // scale quad to correct aspect ratio
+        quad.scale.set(1.f, -(h/w.toFloat), 1.f)
+
         // allocate texture data as float buffer
         val buffer = ByteBuffer.allocateDirect(w*h*4 * 4);
         buffer.order(ByteOrder.nativeOrder());
@@ -57,11 +60,14 @@ object Main extends App with GLAnimatable{
       }
 
       // set texture data from frame
-      val data = new Array[Int](w*h*4)
       val fdata = new Array[Float](w*h*4)
-      frame.getRGB(0,0,w,h,data,0,w)
+      val data = frame.getRGB(0,0,w,h,null,0,w)
       for( i <- (0 until data.length)){
-        fdata(i) = data(i) / 255.f
+        val c = data(i)
+        fdata(4*i) = (c >> 16 & 0xFF) / 255.f
+        fdata(4*i+1) = (c >> 8 & 0xFF) /255.f 
+        fdata(4*i+2) = (c & 0xFF) / 255.f 
+        fdata(4*i+3) = 1.f
       }
       texData.put(fdata)
       texData.rewind
@@ -70,6 +76,7 @@ object Main extends App with GLAnimatable{
       Texture.bind(texID)
       Texture(texID).getTextureData().consumeCompressedData()
       Shader.texture = 1.f
+      Shader.lighting = 0.f
     }
 
     quad.draw()

@@ -20,7 +20,7 @@ object Main extends App with GLAnimatable{
   GLScene.push(this)
 
   // ODC ARDrone platform
-  val drone = new ARDrone("192.168.3.1")
+  val drone = new ARDrone("192.168.1.1")
 
   // quad to render video stream on
   val quad = Quad()

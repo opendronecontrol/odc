@@ -175,7 +175,7 @@ object Settings {
     val simDest = file("apps/droneSimulator/lib")
     val leapDest = file("apps/leapController/lib")
     val nativeDest = file("apps/lib")
-    val nativeFilter =  new ExactFilter("libGlulogicMT.jnilib") | new ExactFilter("libLeap.dylib" | 
+    val nativeFilter =  new ExactFilter("libGlulogicMT.jnilib") | new ExactFilter("libLeap.dylib") | 
                         new ExactFilter("libLeapJava.dylib") | new ExactFilter("libopencv_java245.dylib")
                       
                 

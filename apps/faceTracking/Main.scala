@@ -47,7 +47,7 @@ object Main extends App with GLAnimatable{
   var (w,h) = (0,0)
 
   implicit var camera = new CalibratedCamera()
-  var faceDetector = new FaceDetector(0.17)
+  var faceDetector = new FaceDetector(0.17/2.0)
 
   // Ruby script runner - reloads on save
   val live = new Ruby("face.rb")
@@ -88,17 +88,21 @@ object Main extends App with GLAnimatable{
       val img = new Mat(h,w,CvType.CV_8UC3)
       img.put(0,0,bytes)
 
-      val count = faceDetector(img)
+      val small = new Mat()
+      // scale image run faster
+      Imgproc.resize(img,small, new Size(), 0.5,0.5,0)
+      val count = faceDetector(small)
 
       val bb = pix.getPixels()
       bb.put(bytes)
       bb.rewind()
 
       if( count > 0){
-        val x = faceDetector.face.x
-        val y = faceDetector.face.y
-        val w = faceDetector.face.width
-        val h = faceDetector.face.height
+        // get face position and draw scaling back up to match full size frame
+        val x = faceDetector.face.x*2
+        val y = faceDetector.face.y*2
+        val w = faceDetector.face.width*2
+        val h = faceDetector.face.height*2
         pix.setColor(0.f,1.f,0.f,1.f)
         pix.drawRectangle(x,y,w,h)
       }

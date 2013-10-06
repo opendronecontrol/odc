@@ -8,7 +8,7 @@ module M
   include_package "com.fishuyo.spatial"
   include_package "com.fishuyo.graphics"
   include_package "com.fishuyo.util"
-  include_package "org.opendronecontrol.apps.leapController"
+  include_package "org.opendronecontrol.apps.faceTracking"
 end
 
 class Object

@@ -163,7 +163,7 @@ object Settings {
     
     // Declare names
     val baseUrl = "http://fishuyo.com/stuff"
-    val zipName = "odcLibs.zip"
+    val zipName = "odcSeerLibs.zip"
     val zipFile = new java.io.File(zipName)
 
     // Fetch the file.
@@ -172,17 +172,25 @@ object Settings {
     IO.download(url, zipFile)
 
     // Extract jars into their respective lib folders.
-    val seerDest = file("apps/droneSimulator/lib")
+    val simDest = file("apps/droneSimulator/lib")
+    val leapDest = file("apps/leapController/lib")
+    val nativeDest = file("apps/lib")
+    val nativeFilter =  new ExactFilter("libGlulogicMT.jnilib") | new ExactFilter("libLeap.dylib" | 
+                        new ExactFilter("libLeapJava.dylib") | new ExactFilter("libopencv_java245.dylib")
+                      
+                
+    val seerFilter =  new ExactFilter("GlulogicMT.jar") | new ExactFilter("seer-core_2.10-0.1.jar") | new ExactFilter("LibLeap.jar")
+                      new ExactFilter("seer-desktop_2.10-0.1.jar") | new ExactFilter("monido-core_2.10-0.1.2.jar") | new ExactFilter("gdx.jar") |
+                      new ExactFilter("gdx-natives.jar") | new ExactFilter("gdx-backend-lwjgl.jar") | new ExactFilter("gdx-backend-lwjgl-natives.jar") |
+                      new ExactFilter("opencv-245.jar") | new ExactFilter("seer-leap_2.10-0.1.jar") | new ExactFilter("seer-multitouch_2.10-0.1.jar") |
+                      new ExactFilter("seer-opencv_2.10-0.1.jar") | new ExactFilter("seer-kinect_2.10-0.1.jar") | new ExactFilter("seer-video_2.10-0.1.jar")
+    
     val maxDest = file("apps/maxmsp-external/lib")
-    val odcDest = file("odc/lib")
-    val seerFilter =  new ExactFilter("GlulogicMT.jar") | new ExactFilter("libGlulogicMT.jnilib") | new ExactFilter("seer.jar") | 
-                      new ExactFilter("seer-desktop.jar") | new ExactFilter("monido-core_2.10-0.1.2.jar") | new ExactFilter("gdx.jar") |
-                      new ExactFilter("gdx-natives.jar") | new ExactFilter("gdx-backend-lwjgl.jar") | new ExactFilter("gdx-backend-lwjgl-natives.jar")
     val maxFilter = new ExactFilter("max.jar") | new ExactFilter("jitter.jar")
-    // val odcFilter = new ExactFilter("h264-decoder-1.0.jar")
-    IO.unzip(zipFile, seerDest, seerFilter)
+    IO.unzip(zipFile, simDest, seerFilter)
+    IO.unzip(zipFile, leapDest, seerFilter)
     IO.unzip(zipFile, maxDest, maxFilter)
-    // IO.unzip(zipFile, odcDest, odcFilter)
+    IO.unzip(zipFile, nativeDest, nativeFilter)
 
     // Destroy the file.
     zipFile.delete

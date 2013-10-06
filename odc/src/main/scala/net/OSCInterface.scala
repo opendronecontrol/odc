@@ -85,30 +85,49 @@ class OSCInterface(val drone:DroneBase) {
 
 	  rcv.action = {
 
-	  	case (Message("/connect"), _) => drone.connect
-	  	case (Message("/disconnect"), _) => drone.disconnect
-	  	case (Message("/reset"), _) => drone.reset
-	  	case (Message("/takeOff"), _) => drone.takeOff
-	  	case (Message("/land"), _) => drone.land
-	  	case (Message("/move",x:Float,y:Float,z:Float,r:Float), _) => drone.move(x,y,z,r)
-	  	case (Message("/hover"), _) => drone.hover
-
-
-	  	case (Message("/moveTo",a:Float,b:Float,c:Float,d:Float), _) => drone.tracking.moveTo(a,b,c,d)
-	  	
-
-	  	case (Message("/sendSensors", ip:String, port:Int), _) => sendSensors(ip,port)
-	  	case (Message("/broadcastSensors", port:Int), _) => broadcastSensors(port)
-
-	  	case (Message("/config", key:String, value:Any), _) => drone.config(key,value)
-
-	    case (Message( name, vals @ _* ), _) =>
-	    	drone.command(name.replaceFirst("/",""), vals:_* )
+	  	case (b:Bundle, _) => handleBundle(b)
+	  	case (m:Message, _) => handleMessage(m)
 	     
 	    case (p, addr) => println( "Ignoring: " + p + " from " + addr )
 	  }
 
 	  rcv.connect()
+	}
+
+	def handleBundle(bundle:Bundle){
+		bundle match {
+			case Bundle(t, msgs @ _*) =>
+				msgs.foreach{
+					case b:Bundle => handleBundle(b)
+					case m:Message => handleMessage(m)
+					case _ => println("unhandled object in bundle")
+				}
+			case _ => println("bad bundle")
+		}
+	}
+
+	def handleMessage(msg:Message){
+		msg match {
+			case Message("/connect") => drone.connect
+	  	case Message("/disconnect") => drone.disconnect
+	  	case Message("/reset") => drone.reset
+	  	case Message("/takeOff") => drone.takeOff
+	  	case Message("/land") => drone.land
+	  	case Message("/move",x:Float,y:Float,z:Float,r:Float) => drone.move(x,y,z,r)
+	  	case Message("/hover") => drone.hover
+
+
+	  	case Message("/moveTo",a:Float,b:Float,c:Float,d:Float) => drone.tracking.moveTo(a,b,c,d)
+	  	
+
+	  	case Message("/sendSensors", ip:String, port:Int) => sendSensors(ip,port)
+	  	case Message("/broadcastSensors", port:Int) => broadcastSensors(port)
+
+	  	case Message("/config", key:String, value:Any) => drone.config(key,value)
+
+	    case Message( name, vals @ _* ) => drone.command(name.replaceFirst("/",""), vals:_* )
+	    case _ => println( "Ignoring: " + msg )
+		}
 	}
 
 	def stop() = { println("OSC server shutting down.."); drone.sensorData.foreach(_.unbind); rcv.close(); out.close(); }

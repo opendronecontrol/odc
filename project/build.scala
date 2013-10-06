@@ -174,6 +174,7 @@ object Settings {
     // Extract jars into their respective lib folders.
     val simDest = file("apps/droneSimulator/lib")
     val leapDest = file("apps/leapController/lib")
+    val faceDest = file("apps/faceTracking/lib")
     val nativeDest = file("apps/lib")
     val nativeFilter =  new ExactFilter("libGlulogicMT.jnilib") | new ExactFilter("libLeap.dylib") | 
                         new ExactFilter("libLeapJava.dylib") | new ExactFilter("libopencv_java245.dylib")
@@ -189,6 +190,7 @@ object Settings {
     val maxFilter = new ExactFilter("max.jar") | new ExactFilter("jitter.jar")
     IO.unzip(zipFile, simDest, seerFilter)
     IO.unzip(zipFile, leapDest, seerFilter)
+    IO.unzip(zipFile, faceDest, seerFilter)
     IO.unzip(zipFile, maxDest, maxFilter)
     IO.unzip(zipFile, nativeDest, nativeFilter)
 
@@ -249,6 +251,12 @@ object odcBuild extends Build {
   lazy val leapController = Project (
     "LeapController",
     file("apps/leapController"),
+    settings = Settings.seer //++ Settings.proguard
+  ) dependsOn(backend_ardrone)
+
+  lazy val faceTracking = Project (
+    "FaceTracking",
+    file("apps/faceTracking"),
     settings = Settings.seer //++ Settings.proguard
   ) dependsOn(backend_ardrone)
 

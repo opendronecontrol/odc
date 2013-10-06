@@ -1,3 +1,11 @@
+/*
+///    [ODC] Processing Example - DroneVideo - Tim Wood and Sterling Crispin 2013 - fishuyo@gmail.com || sterlingcrispin@gmail.com || http://fishuyo.com/ || http://www.sterlingcrispin.com
+///    Press 'u' to takeoff and land
+///    fly the drone in the X and Z directions by moving your mouse around in the draw window
+
+///    if you've downloaded this code from the ODC github you may be missing the ODC processing libraries, please visit the ODC website to download them
+///    http://www.opendronecontrol.org/
+*/
 
 import java.awt.image.BufferedImage;
 import org.opendronecontrol.platforms.ardrone.ARDrone;
@@ -18,7 +26,7 @@ float droneYaw;
 void setup(){
   
   size(640,480, OPENGL);
-  drone = new ARDrone("192.168.3.1"); // default IP is 192.168.1.1
+  drone = new ARDrone("192.168.1.1"); // default IP is 192.168.1.1
   drone.connect();
   gyro = new Vec3(0.0,0.0,0.0);
 
@@ -68,19 +76,17 @@ void draw(){
      }
    }
 
-
   drone.move(droneX,droneY,droneZ,droneYaw);  
 }
 
 
-void mousePressed(){
-  
- if(flying==false){
-   drone.takeOff(); 
- }else{
-   drone.land();
- }
-   
-}
-  
 
+void keyPressed(){
+  if (key =='u'){
+    if(flying==false){
+      drone.takeOff(); 
+    } else{
+     drone.land(); 
+    }
+  }
+}

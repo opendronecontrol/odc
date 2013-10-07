@@ -16,7 +16,7 @@ object DroneOSC extends App {
   }
 
   // create a ARDrone client and start listening for OSC messages
-  var drone = new ARDrone
+  var drone = new ARDrone()  
   drone.osc.start(port)
 
   // wait for return then exit

@@ -18,7 +18,7 @@ Currently [ODC] is a first attempt at creating a generalized, open, extensible D
 * download a template project (other platforms) [here](http://opendronecontrol.org/downloads/ODC_MaxTemplate_no_xuggle.zip)
 
 [ODC] works in [Processing](http://processing.org/)
-* download a template project [here](http://opendronecontrol.org/downloads/templates/ODC_ProcessingTemplate.zip)
+* download a template project [here](http://opendronecontrol.org/downloads/ODC_ProcessingTemplate.zip)
 
 [ODC] is controllable from any device via OpenSoundControl!
 * example app DroneOSC acts as a standalone ARDrone controller

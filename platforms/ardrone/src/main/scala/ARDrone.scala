@@ -225,7 +225,9 @@ class ARDrone(var ip:String="192.168.1.1") extends DroneBase {
       case "maxEulerAngle" if value.isInstanceOf[Float] => setMaxEuler(value.asInstanceOf[Float])
       case "maxVerticalSpeed" if value.isInstanceOf[Float] => setMaxVertical(value.asInstanceOf[Float])
       case "maxRotationSpeed" if value.isInstanceOf[Float] => setMaxRotation(value.asInstanceOf[Float])
-      case "videoMode" if value.isInstanceOf[Int] => videoStream.foreach( _.config("mode",value.asInstanceOf[Int])) 
+      case "videoMode" if value.isInstanceOf[Int] => videoStream.foreach( _.config("mode",value.asInstanceOf[Int]))
+
+      case "ip" if value.isInstanceOf[String] => ip = value.asInstanceOf[String] 
 
       case _ => println(s"unknown config key '$key' for value $value")
     }

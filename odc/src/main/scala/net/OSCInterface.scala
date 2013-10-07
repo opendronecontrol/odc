@@ -114,10 +114,19 @@ class OSCInterface(val drone:DroneBase) {
 	  	case Message("/takeOff") => drone.takeOff
 	  	case Message("/land") => drone.land
 	  	case Message("/move",x:Float,y:Float,z:Float,r:Float) => drone.move(x,y,z,r)
+	  	case Message("/left",x:Float) => drone.left(x)
+	  	case Message("/right",x:Float) => drone.right(x)
+	  	case Message("/forward",x:Float) => drone.forward(x)
+	  	case Message("/back",x:Float) => drone.back(x)
+	  	case Message("/up",x:Float) => drone.up(x)
+	  	case Message("/down",x:Float) => drone.down(x)
+	  	case Message("/ccw",x:Float) => drone.ccw(x)
+	  	case Message("/cw",x:Float) => drone.cw(x)
 	  	case Message("/hover") => drone.hover
 
 
 	  	case Message("/moveTo",a:Float,b:Float,c:Float,d:Float) => drone.tracking.moveTo(a,b,c,d)
+	  	case Message("/step",a:Float,b:Float,c:Float,d:Float) => drone.tracking.step(a,b,c,d)
 	  	
 
 	  	case Message("/sendSensors", ip:String, port:Int) => sendSensors(ip,port)

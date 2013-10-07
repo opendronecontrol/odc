@@ -411,8 +411,13 @@ public class ARDrone
             case 1:
                 return   new ARDrone10VideoDataDecoder(this, VIDEO_BUFFER_SIZE);
             case 2:
-                disableAutomaticVideoBitrate(); // test this
-                return   new ARDrone20VideoDataDecoder(this);
+                try{
+                    disableAutomaticVideoBitrate(); // test this
+                    return   new ARDrone20VideoDataDecoder(this);
+                } catch (Exception e){
+                    System.out.println(e);
+                    return null;
+                }
             default:
                 return   new ARDrone10VideoDataDecoder(this, VIDEO_BUFFER_SIZE);
         }

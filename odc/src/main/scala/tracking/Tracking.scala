@@ -11,7 +11,7 @@ import scala.collection.mutable.Queue
 // /** PositionController Module
 //   *   this is a mixin trait for DroneBase that adds absolute positioning based on some position sensors or tracking system
 //   */
-// trait PositionController extends DroneBase {
+// trait PositionControllerMixin extends DroneBase {
 //   val tracker = new PositionTrackingController(this)
 //   def moveTo(p:Pose){ tracker.moveTo(p) }
 //   def step(p:Pose){ tracker.step(p) }
@@ -19,17 +19,17 @@ import scala.collection.mutable.Queue
 
 
 
-/** PositionController
+/** PositionTrackingController
   *   Used to handle tracking system state and calculate control parameters pased on a destination position and yaw
-  *		using a simple proportional derivative controller
+  *    using a simple proportional derivative controller
   */
 class PositionTrackingController( val drone:DroneBase ) {
 
-	// PID controllers
-	// val positionPID = new PIDController[Vec3]
-	// val rotationPID = new PIDController[Float]
-	// positionPID.setGains(Vec3(.5f,1.f,.5f),Vec3(0),Vec3(300.f,3.f,300.f))
-	// rotationPID.setGains(.318f,0.f,3.f)
+  // PID controllers
+  // val positionPID = new PIDController[Vec3]
+  // val rotationPID = new PIDController[Float]
+  // positionPID.setGains(Vec3(.5f,1.f,.5f),Vec3(0),Vec3(300.f,3.f,300.f))
+  // rotationPID.setGains(.318f,0.f,3.f)
 
   // current state flags
   var (navigating, goingHome) = (false,false)
@@ -149,11 +149,11 @@ class PositionTrackingController( val drone:DroneBase ) {
     }
 
     if( homePose == null ) homePose = Pose(p)    // save initial pose for later
-    if( !navigating ) return										 // only run if navigating flag set
+    if( !navigating ) return                     // only run if navigating flag set
 
-    var hover = useHover												 // default non action flag
-    rot = 0.f 																	 // zero rotation control value
-    control.zero() 															 // zero translation control value
+    var hover = useHover                         // default non action flag
+    rot = 0.f                                    // zero rotation control value
+    control.zero()                                // zero translation control value
 
     // update tracked velocity
     tVel = p.pos - tPose.pos
@@ -171,20 +171,20 @@ class PositionTrackingController( val drone:DroneBase ) {
 
     /*** rotation controller ***/
     var destRotVec = Vec3()
-    var rotVec = p.uf().normalize()							// current direction vector of drone
+    var rotVec = p.uf().normalize()              // current direction vector of drone
 
     
-    if(lookAtDest) destRotVec.set( (destPose.pos - tPose.pos).normalize )				// look where it's going
-    else if( isLookingAt ) destRotVec.set( (lookingAt - tPose.pos).normalize ) 	// look at point
-    else destRotVec.set( destPose.uf().normalize )												      // look in destination pose direction
+    if(lookAtDest) destRotVec.set( (destPose.pos - tPose.pos).normalize )        // look where it's going
+    else if( isLookingAt ) destRotVec.set( (lookingAt - tPose.pos).normalize )   // look at point
+    else destRotVec.set( destPose.uf().normalize )                              // look in destination pose direction
 
     yawError = math.acos((destRotVec dot rotVec)).toFloat
-    if( (rotVec cross destRotVec).y > 0.f ) yawError *= -1.f 		// negate error if cross product points up (destination to left)
+    if( (rotVec cross destRotVec).y > 0.f ) yawError *= -1.f     // negate error if cross product points up (destination to left)
 
     // set rot control value if error over threshold
     if( math.abs(yawError) > (yawThresh * math.Pi/180.f) ){ 
       hover = false
-      rot = yawError * rotKp  	// Proportional control onlny
+      rot = yawError * rotKp    // Proportional control onlny
       if( math.abs(rot) > 1.f) rot = rot / math.abs(rot) // limit control value to [-1,1]
     }
 

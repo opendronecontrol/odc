@@ -25,7 +25,7 @@ class ARDrone(var ip:String="192.168.1.1") extends DroneBase {
 
   // javadrone api ARDrone
   var drone : Option[JD] = None
-	
+  
   // controller params
   var maxEuler = 0.3f  //(0 - .52 rad)
   var maxVert = 1.f   //(0.2 - 2. m/s)
@@ -45,7 +45,7 @@ class ARDrone(var ip:String="192.168.1.1") extends DroneBase {
       // override def run(){
         try {
           val d = new JD( InetAddress.getByName(ip), 1000, 1000 )
-         	println("connecting to ARDrone at " + ip + " ..." )
+           println("connecting to ARDrone at " + ip + " ..." )
           d.connect
           d.clearEmergencySignal
           d.waitForReady(3000)

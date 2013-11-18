@@ -22,6 +22,7 @@ end
 ###########################
 
 $drone = Main.drone
+# $drone.config("ip","192.168.3.1")
 
 # $drone.config("maxEulerAngle", 0.25)
 

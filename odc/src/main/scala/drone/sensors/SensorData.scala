@@ -12,13 +12,13 @@ import scala.collection.mutable.Map
   */
 class SensorBase[+T](val name:String, val value:T){
   def vec = value.asInstanceOf[Vec3]
-	def getVec3 = value.asInstanceOf[Vec3]
+  def getVec3 = value.asInstanceOf[Vec3]
   def float = value.asInstanceOf[Float]
-	def getFloat = value.asInstanceOf[Float]
+  def getFloat = value.asInstanceOf[Float]
   def int = value.asInstanceOf[Int]
-	def getInt = value.asInstanceOf[Int]
+  def getInt = value.asInstanceOf[Int]
   def bool = value.asInstanceOf[Boolean]
-	def getBoolean = value.asInstanceOf[Boolean]
+  def getBoolean = value.asInstanceOf[Boolean]
 }
 
 /** Case class extension of [[SensorBase]]
@@ -44,8 +44,8 @@ case class Battery(v:Int) extends SensorBase[Int]("battery",v)
 class SensorData {
 
   type Callback = (SensorBase[Any]) => Unit
-	var callback = (s:SensorBase[Any]) => ()
-	val callbacks = Map[String, Callback]()
+  var callback = (s:SensorBase[Any]) => ()
+  val callbacks = Map[String, Callback]()
 
   val sensorData = Map[String,SensorBase[Any]]()
 
@@ -59,8 +59,8 @@ class SensorData {
 
   def get(name:String) = this(name)
   def set(s:SensorBase[Any]) = {
-  	sensorData(s.name) = s
-  	callback(s)
+    sensorData(s.name) = s
+    callback(s)
   }
 
   def bind(f:Callback) = callback = f

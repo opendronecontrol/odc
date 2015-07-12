@@ -14,8 +14,6 @@ Feel free to fork and explore the github repo to add functionality and improve t
 
 To get started look at our notes from the [Drones & Aerial Robotics Workshop](http://opendronecontrol.org/darc-workshop/) hosted by ITP/NYU in October 2013.
 
----
-
 Getting Started
 ===
 
@@ -132,8 +130,6 @@ Example messages:
 	/land
 	/disconnect
 ```
-
----
 
 DARC Workshop
 ===

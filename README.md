@@ -143,4 +143,4 @@ We will be presenting the ODC framework at the Hackathon hosted by Nodecopter on
 
 Follow the conference and ODC at [@droneconference](https://twitter.com/droneconference), [@opendronectrl](https://twitter.com/opendronectrl).
 
-[Download Handout](http://handout.pdf)
+[Download Handout](https://github.com/opendronecontrol/odc/raw/master/downloads/darc_workshop.pdf)

@@ -1,6 +1,8 @@
 OpenDroneControl [ODC]
 ===
 
+[ODC is not under currently active development as of early 2014. If you would like to contribute to the project, contact us or submit a pull request.]
+
 OpenDroneControl [ODC] is an open source software platform for developing interactive artworks and research projects with aerial robotics. ODC was developed to be a community-supported framework for connecting commercially available quadcopter platforms to a common programming interface. The framework provides access to platform specific sensors and optionally allows for additional functionality such as navigation and tracking.
 
 ODC is compatible with creative coding software such as Processing, Max, and open Frameworks (oF). Additionally, ODC is designed for expansion through code modules, third party peripherals, integration with emerging aerial robotic platforms, and user developed applications. Application developers can utilize this common interface to easily target multiple drone platforms without redesigning their code which allows for rapid project development.
